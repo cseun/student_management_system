@@ -26,15 +26,15 @@ class CAboutDlg : public CDialogEx
 public:
 	CAboutDlg();
 
-// 대화 상자 데이터입니다.
+	// 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_ABOUTBOX };
 #endif
 
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 
-// 구현입니다.
+	// 구현입니다.
 protected:
 	DECLARE_MESSAGE_MAP()
 };
@@ -260,11 +260,9 @@ void CStudentManagementDlg::OnBnClickedButtonSave()
 void CStudentManagementDlg::OnBnClickedButtonDelete()
 {
 	student student = getStudentInfo();
-
-	if (studentList.deleteStudent(student.studentNumber)) {
-		resetStudentInfo();
-		resetStudentList();
-	}
+	studentList.deleteStudent(student.studentNumber);
+	resetStudentInfo();
+	resetStudentList();
 }
 
 // 학생 정보 컨트롤에서 가져오기
@@ -302,7 +300,7 @@ student CStudentManagementDlg::getStudentInfo()
 }
 
 void CStudentManagementDlg::setStudentInfo(StudentList::StudentRow row)
-{	
+{
 	m_studentNumber = row.studentNumber;
 	m_name = row.name;
 	m_class = row.className;
@@ -317,10 +315,8 @@ void CStudentManagementDlg::setStudentInfo(StudentList::StudentRow row)
 	m_totalScore = row.totalScore;
 	m_rank = row.rank;
 
-	TRACE(m_studentNumber);
-	UpdateData(FALSE); // 멤버 변수를 컨트롤에 저장?
+	UpdateData(FALSE);
 }
-
 
 // 에러 정보 출력
 // 1) 에러 객체(errorStruct<errorCode, errorContext>) 받아오기
@@ -379,13 +375,13 @@ void CStudentManagementDlg::OnClickListStudent(NMHDR* pNMHDR, LRESULT* pResult)
 
 	if (selectIdx >= 0) {
 		CString studentNumber = m_studentInfoListCtl.GetItemText(selectIdx, 3);
-
+		
 		CT2A ascii(studentNumber);                // CString → const char*
 		std::string studentNumStr(ascii);          // const char* → std::string
 
 		// searchStudent()는 student* 반환
 		student* pStudent = studentList.searchStudent(studentNumStr);
-		
+
 		if (pStudent != nullptr) {
 			setStudentInfo(studentList.getAttributeRow(*pStudent));
 		}
@@ -403,11 +399,14 @@ void CStudentManagementDlg::OnClickListStudent(NMHDR* pNMHDR, LRESULT* pResult)
 // 3) 리스트 재표시
 void CStudentManagementDlg::resetStudentList()
 {
+	if (m_studentInfoListCtl.GetItemCount() > 0)
+	{
+		m_studentInfoListCtl.DeleteAllItems();
+	}
+
 	if (studentInfos.empty()) {
 		return;
 	}
-
-	m_studentInfoListCtl.DeleteAllItems();
 
 	auto rows = studentList.getAttributeRows();
 
@@ -476,9 +475,8 @@ void CStudentManagementDlg::OnClickedButtonSaveFile()
 		return;
 
 	CString filePath = dlg.GetPathName();
-
-	CT2CA pszConvertedAnsiString(filePath);
-	std::string path(pszConvertedAnsiString);
+	CT2CA utf8Path(filePath, CP_UTF8);
+	std::string path(utf8Path);
 
 	if (studentList.saveToCSV(path))
 		AfxMessageBox(_T("CSV 파일로 저장되었습니다."));
