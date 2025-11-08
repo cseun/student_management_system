@@ -1,0 +1,248 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+#include "verrsrc.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// í•œêµ­ì–´(ëŒ€í•œë¯¼êµ­) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
+LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
+#pragma code_page(949)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "#include ""verrsrc.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)\r\n"
+    "LANGUAGE 18, 1\r\n"
+    "#include ""res\\StudentManagement.rc2""  // Microsoft Visual C++ ????? ??? ???????? ?????? ?????????.\r\n"
+    "#include ""l.KOR\\afxres.rc""      // ??? ???? ???\r\n"
+    "#if !defined(_AFXDLL)\r\n"
+    "#include ""l.KOR\\afxribbon.rc""   // MFC ???? ?? ????? ???? ?????\r\n"
+    "#endif\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\StudentManagement.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "StudentManagement ????"
+FONT 9, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
+    LTEXT           "StudentManagement, ???? 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2025",IDC_STATIC,42,26,114,8
+    DEFPUSHBUTTON   "???",IDOK,113,41,50,14,WS_GROUP
+END
+
+IDD_STUDENTMANAGEMENT_DIALOG DIALOGEX 0, 0, 601, 285
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "ÇÐ»ý ¼ºÀû °ü¸® ÇÁ·Î±×·¥"
+FONT 9, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    GROUPBOX        "Student List",IDC_STATIC,7,7,322,271
+    GROUPBOX        "Properties",IDC_STATIC,338,7,256,271
+    GROUPBOX        "Student Info",IDC_STATIC,347,23,237,44
+    GROUPBOX        "Score",IDC_STATIC,349,77,237,129
+    CTEXT           "¹Ý",IDC_STATIC,431,42,22,11
+    CTEXT           "ÀÌ¸§",IDC_STATIC,354,42,22,11
+    CTEXT           "  ÇÐ³â",IDC_STATIC,477,42,22,11
+    CTEXT           "¹øÈ£",IDC_STATIC,526,42,22,11
+    EDITTEXT        IDC_EDIT_NAME,378,39,47,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_GRADE,455,39,23,15,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_CLASS,503,39,22,15,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_NUMBER,550,39,24,15,ES_AUTOHSCROLL | ES_NUMBER
+    CTEXT           "±¹¾î",IDC_STATIC,354,92,22,11
+    CTEXT           "¼öÇÐ",IDC_STATIC,354,136,22,11
+    CTEXT           "°úÇÐ",IDC_STATIC,354,158,22,11
+    CTEXT           "»çÈ¸",IDC_STATIC,354,183,22,11
+    EDITTEXT        IDC_EDIT_KUK,378,89,50,15,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_SCIENCE,378,157,50,15,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_SOCIAL,378,180,50,15,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_MATH,378,134,50,15,ES_AUTOHSCROLL | ES_NUMBER
+    CTEXT           "ÃÑÁ¡",IDC_STATIC,495,145,22,11
+    EDITTEXT        IDC_EDIT_SCORE,521,144,50,15,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    CTEXT           "µî¼ö",IDC_STATIC,495,170,22,11
+    PUSHBUTTON      "Ãß°¡",IDC_BUTTON_ADD,388,216,50,14
+    PUSHBUTTON      "ÀúÀå",IDC_BUTTON_SAVE,443,216,50,14
+    PUSHBUTTON      "»èÁ¦",IDC_BUTTON_DELETE,498,216,50,14
+    PUSHBUTTON      "ÆÄÀÏ ºÒ·¯¿À±â(.csv)",IDC_BUTTON_LOAD_FILE,92,257,72,14
+    PUSHBUTTON      "ÆÄÀÏ ÀúÀåÇÏ±â(.csv)",IDC_BUTTON_SAVE_FILE,170,257,71,14
+    CONTROL         "",IDC_LIST_STUDENT,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,19,23,299,227
+    EDITTEXT        IDC_EDIT_RANK,521,168,50,15,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    CTEXT           "¿µ¾î",IDC_STATIC,354,113,22,11
+    EDITTEXT        IDC_EDIT_ENG,378,110,50,15,ES_AUTOHSCROLL | ES_NUMBER
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041204B0"
+        BEGIN
+            VALUE "CompanyName", "TODO: <??? ???>"
+            VALUE "FileDescription", "StudentManagement"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "StudentManagement.exe"
+            VALUE "LegalCopyright", "TODO: (c) <??? ???>.  All rights reserved."
+            VALUE "OriginalFilename", "StudentManagement.exe"
+            VALUE "ProductName", "TODO: <??? ???>"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x412, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 163
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+
+    IDD_STUDENTMANAGEMENT_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 594
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 278
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_STUDENTMANAGEMENT_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "StudentManagement ????(&A)..."
+END
+
+#endif    // í•œêµ­ì–´(ëŒ€í•œë¯¼êµ­) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
+LANGUAGE 18, 1
+#include "res\StudentManagement.rc2"  // Microsoft Visual C++ ????? ??? ???????? ?????? ?????????.
+#include "l.KOR\afxres.rc"      // ??? ???? ???
+#if !defined(_AFXDLL)
+#include "l.KOR\afxribbon.rc"   // MFC ???? ?? ????? ???? ?????
+#endif
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
