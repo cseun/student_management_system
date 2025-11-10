@@ -1,40 +1,43 @@
-#pragma once
+﻿#pragma once
 #include "pch.h"
 #include <string>
+#include <sstream>
+#include <chrono>
 #include "student.h"
 
-student::student() : grade(0), kukScore(0), engScore(0), mathScore(0), scienceScore(0), socialScore(0), totalScore(0), rank(0) {};
-
-student::student(
-    std::string studentNumber,
-    std::string name,
-    int grade,
-    std::string className,
-    int kukScore,
-    int engScore,
-    int mathScore,
-    int scienceScore,
-    int socialScore
-) : studentNumber(studentNumber),
-name(name),
-grade(grade),
-className(className),
-kukScore(kukScore),
-engScore(engScore),
-mathScore(mathScore),
-scienceScore(scienceScore),
-socialScore(socialScore),
-rank(0)
+Student::Student(
+    std::string name,          
+    int grade,                     
+    std::string className,     
+    std::string studentNumber
+) : name(name), grade(grade), className(className), studentNumber(studentNumber)
 {
-    updateTotalScore();
+    setKey();
 }
 
-int student::getTotalScore()
+void Student::setKey()
 {
-    return totalScore;
+    // 키: [현재시간]-[학년]-[반]-[번호]
+    auto now = std::chrono::system_clock::now();
+    auto millis = 
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            now.time_since_epoch()).count();
+
+    std::ostringstream oss;
+    oss << millis << "-" << grade << "-" << className << "-" << studentNumber;
+    studentKey = oss.str();
 }
 
-void student::updateTotalScore()
+std::string Student::getKey() const
 {
-    totalScore = kukScore + engScore + mathScore + scienceScore + socialScore;
+    return studentKey;
+}
+
+// studentKey는 유지, 나머지만 업데이트
+bool Student::updateInfo(Student& student)
+{
+    this->name = student.name;
+    this->grade = student.grade;
+    this->className = student.className;
+    this->studentNumber = student.studentNumber;
 }

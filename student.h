@@ -1,34 +1,25 @@
-#pragma once
+﻿#pragma once
 #include <string>
 
-class student
+class Student
 {
+private:
+    std::string studentKey;
+    void setKey();
+
 public:
-    std::string studentNumber;
     std::string name;
     int grade;
     std::string className;
-    int kukScore;
-    int engScore;
-    int mathScore;
-    int scienceScore;
-    int socialScore;
-    int totalScore;
-    int rank;
+    std::string studentNumber;
 
-    student();
-    student(
-        std::string studentNumber,
+    Student(
         std::string name,
         int grade,
         std::string className,
-        int kukScore,
-        int engScore,
-        int mathScore,
-        int scienceScore,
-        int socialScore
+        std::string studentNumber
     );
 
-    int getTotalScore();
-    void updateTotalScore();
+    std::string getKey() const;
+    bool updateInfo(Student& student);
 };

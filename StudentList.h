@@ -1,56 +1,56 @@
-#pragma once
+﻿#pragma once
+#include <string>
 #include <map>
-#include <fstream>
 #include <vector>
-#include "student.h"
-#include "fileService.h"
+#include "Student.h"
 
-extern std::map<std::string, student> studentInfos;
-
-// 학생 정보 리스트를 다루는 클래스
+// 학생 목록
 class StudentList
 {
-public:
-	StudentList();
-	
-	struct StudentRow
-	{
-		CString name;
-		CString grade;
-		CString className;
-		CString studentNumber;
-		CString kukScore;
-		CString engScore;
-		CString mathScore;
-		CString scienceScore;
-		CString socialScore;
-		CString totalScore;
-		CString rank;
+private:
+	// 학년,반,번호(studentListKey)로 학생(student)을 찾아갈 수 있도록 한다.
+	std::map<std::string, std::string> studentIndexList; // 인덱스 개념 <studentListKey : studentIdx>
+	std::map<std::string, Student> studentList; // 실제 리스트 <studentIdx : Student>
 
-		// 벡터 변환
-		std::vector<CString> toVector() const {
-			return { name, grade, className, studentNumber, kukScore, engScore, mathScore, scienceScore, socialScore, totalScore, rank };
+public:
+	StudentList() = default;
+
+	struct StudentListRow
+	{
+		std::string studentListKey;
+		std::string name;
+		std::string grade;
+		std::string className;
+		std::string studentNumber;
+
+		std::vector<std::string> toVector() const {
+			return { studentListKey, name, grade, className, studentNumber };
+		}
+
+		std::pair<std::string, StudentListRow> toPair() const {
+			return { studentListKey, *this };
 		}
 	};
+	// excel
+	std::vector<std::string> getAttributeNames();
+	std::map<std::string, StudentListRow> getAttriuteRows();
 
-	// 리스트에서 다루는 학생 정보 - 목록
-	std::vector<CString> getAttributeNames();
-	// 리스트에서 다루는 학생 정보 - 내용
-	StudentRow getAttributeRow(const student& student);
-	std::vector<std::vector<CString>> getAttributeRows();
+	std::string StudentList::makeStudentListKey(Student& student);// [학년]-[반]-[번호]
+	std::string StudentList::searchStudentListKey(std::string studentKey);
 
-	// 리스트에서 학생 찾기, 추가, 수정, 삭제
-	student* searchStudent(std::string studentNumber);
-	bool addStudent(student student);
-	bool updateStudent(student studentInfo);
-	bool deleteStudent(std::string studentNumber);
-	// 리스트 학생들 등수 업데이트
-	void updateRank();
+	bool isStudentIndexExist(std::string studentListKey);
+	std::string searchStudentKey(std::string studentListKey);
 
-	// 엑셀 구현
-	bool loadFromCSV(const std::string& filePath); 
-	bool saveToCSV(std::string& filePath);
+	void addStudentIndex(std::string studentListKey, std::string studentKey);
+	void updateStudentIndex(std::string originStudentListKey, std::string studentListKey);
+	void deleteStudentIndex(std::string studentListKey);
 
-	// 에러 구현
-	//void CStudentManagementDlg::showErrorDialog(errorStruct error);
+	Student* searchStudent(Student& student);
+	Student* searchStudent(std::string studentListKey);
+
+	Student* addStudent(Student& student);
+	Student* updateStudent(Student& originStudent, Student& student);
+
+	bool deleteStudent(Student& student);
+	bool deleteStudent(std::string studentListKey);
 };

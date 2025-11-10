@@ -183,25 +183,32 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="fileService.h" />
+    <ClInclude Include="ExcelManager.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="student.h" />
+    <ClInclude Include="Student.h" />
+    <ClInclude Include="StudentExcelManager.h" />
     <ClInclude Include="StudentList.h" />
+    <ClInclude Include="StudentScore.h" />
+    <ClInclude Include="StudentScoreList.h" />
     <ClInclude Include="StudentManagement.h" />
     <ClInclude Include="StudentManagementDlg.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ExcelManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="student.cpp" />
+    <ClCompile Include="Student.cpp" />
+    <ClCompile Include="StudentExcelManager.cpp" />
     <ClCompile Include="StudentList.cpp" />
+    <ClCompile Include="StudentScore.cpp" />
+    <ClCompile Include="StudentScoreList.cpp" />
     <ClCompile Include="StudentManagement.cpp" />
     <ClCompile Include="StudentManagementDlg.cpp" />
   </ItemGroup>
