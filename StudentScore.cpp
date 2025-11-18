@@ -3,7 +3,6 @@
 #include "StudentScore.h"
 
 StudentScore::StudentScore(
-    int studentKey,
     int examId,
     int kukScore = 0,
     int engScore = 0,
@@ -11,7 +10,6 @@ StudentScore::StudentScore(
     int socialScore = 0,
     int scienceScore = 0
 ): 
-    studentKey(studentKey),
     examId(examId),
     kukScore(kukScore), 
     engScore(engScore), 
@@ -21,16 +19,6 @@ StudentScore::StudentScore(
 {
     updateTotalScore();
 };
-
-// 학생에 해당하는 성적을 조회하려면
-// (1) 학생키로 해당하는 studentScoreList에 접근해서, 
-// (2) 받아온 학생 성적을 row로 수정해서
-// (3) 반환
-
-int StudentScore::getStudentKey() const
-{
-    return this->studentKey;
-}
 
 void StudentScore::setExamId(const int examId)
 {

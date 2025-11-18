@@ -6,7 +6,6 @@
 class StudentScore
 {
 private:
-    int studentKey = 0;
     int totalScore = 0;
 public:
     int examId;
@@ -18,7 +17,6 @@ public:
 
     StudentScore() = default;
     StudentScore(
-        int studentKey,
         int examId,
         int kukScore,
         int engScore,
@@ -27,7 +25,6 @@ public:
         int scienceScore
     );
 
-    int getStudentKey() const;
     void setExamId(const int examId);
     void setKukScore(const int kukScore);
     void setEngScore(const int engScore);
