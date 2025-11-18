@@ -1,37 +1,98 @@
-﻿#pragma once
+﻿#include "pch.h"
 #include <string>
-#include "Student.h"
 #include "StudentScore.h"
 
 StudentScore::StudentScore(
-    std::string studentListKey,
+    int studentKey,
+    int examId,
     int kukScore = 0,
     int engScore = 0,
     int mathScore = 0,
-    int scienceScore = 0,
-    int socialScore = 0
-) : kukScore(kukScore), engScore(engScore), mathScore(mathScore), scienceScore(scienceScore), socialScore(socialScore), studentListKey(studentListKey), rank(0)
+    int socialScore = 0,
+    int scienceScore = 0
+): 
+    studentKey(studentKey),
+    examId(examId),
+    kukScore(kukScore), 
+    engScore(engScore), 
+    mathScore(mathScore), 
+    socialScore(socialScore),
+    scienceScore(scienceScore)
 {
     updateTotalScore();
 };
 
-std::string& StudentScore::getStudentListKey()
+// 학생에 해당하는 성적을 조회하려면
+// (1) 학생키로 해당하는 studentScoreList에 접근해서, 
+// (2) 받아온 학생 성적을 row로 수정해서
+// (3) 반환
+
+int StudentScore::getStudentKey() const
 {
-    return studentListKey;
+    return this->studentKey;
 }
 
-void StudentScore::updateScoreInfo(StudentScore& score)
+void StudentScore::setExamId(const int examId)
 {
-    this->kukScore = score.kukScore;
-    this->engScore = score.engScore;
-    this->mathScore = score.mathScore;
-    this->scienceScore = score.scienceScore;
-    this->socialScore = score.socialScore;
+	this->examId = examId;
+}
+void StudentScore::setKukScore(const int kukScore)
+{
+	this->kukScore = kukScore;
+}
+void StudentScore::setEngScore(const int engScore)
+{
+	this->engScore = engScore;
+}
+void StudentScore::setMathScore(const int mathScore)
+{
+	this->mathScore = mathScore;
+}
+void StudentScore::setSocialScore(const int socialScore)
+{
+	this->socialScore = socialScore;
+}
+void StudentScore::setScienceScore(const int scienceScore)
+{
+	this->scienceScore = scienceScore;
+}
+
+void StudentScore::setScoreInfo(const StudentScore& updateScore)
+{
+    setScoreInfo(
+        updateScore.examId,
+        updateScore.kukScore,
+        updateScore.engScore,
+        updateScore.mathScore,
+        updateScore.socialScore,
+        updateScore.scienceScore
+	);
 
     updateTotalScore();
 }
 
+void StudentScore::setScoreInfo(
+    int examId,
+    int kukScore,
+    int engScore,
+    int mathScore,
+    int socialScore,
+    int scienceScore
+){
+    setExamId(examId);
+    setKukScore(kukScore);
+    setEngScore(engScore);
+    setMathScore(mathScore);
+    setSocialScore(socialScore);
+    setScienceScore(scienceScore);
+
+    updateTotalScore();
+}
 void StudentScore::updateTotalScore()
 {
-    totalScore = kukScore + engScore + mathScore + scienceScore + socialScore;
+    this->totalScore = this->kukScore + this->engScore + this->mathScore + this->socialScore + this->scienceScore;
+}
+int StudentScore::getTotalScore()
+{
+    return this->totalScore;
 }

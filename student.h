@@ -4,22 +4,35 @@
 class Student
 {
 private:
-    std::string studentKey;
-    void setKey();
+    int studentKey = 0;
 
 public:
+    static int studentIndex;
+
     std::string name;
-    int grade;
+    std::string grade;
     std::string className;
     std::string studentNumber;
 
+    Student() = default;
     Student(
         std::string name,
-        int grade,
+        std::string grade,
         std::string className,
         std::string studentNumber
     );
 
-    std::string getKey() const;
-    bool updateInfo(Student& student);
+    int getKey() const;
+    void setName(const std::string& name);
+    void setGrade(const std::string& grade);
+    void setClassName(const std::string& className);
+    void setStudentNumber(const std::string& studentNumber);
+
+    void setStudent(
+        const std::string& name,
+        const std::string& grade,
+        const std::string& className,
+        const std::string& studentNumber
+    );
+    void Student::setStudent(const Student& updateStudent);
 };

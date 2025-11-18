@@ -1,43 +1,59 @@
-﻿#pragma once
-#include "pch.h"
+﻿#include "pch.h"
 #include <string>
 #include <sstream>
 #include <chrono>
-#include "student.h"
+#include "Student.h"
+
+int Student::studentIndex = 0;  // 정적 멤버 정의 및 초기화
 
 Student::Student(
-    std::string name,          
-    int grade,                     
-    std::string className,     
+    std::string name,
+    std::string grade,
+    std::string className,
     std::string studentNumber
 ) : name(name), grade(grade), className(className), studentNumber(studentNumber)
 {
-    setKey();
+    studentKey = ++studentIndex;  // 학생 생성될 때 증가 (AUTO_INCREMENT)
 }
 
-void Student::setKey()
-{
-    // 키: [현재시간]-[학년]-[반]-[번호]
-    auto now = std::chrono::system_clock::now();
-    auto millis = 
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            now.time_since_epoch()).count();
-
-    std::ostringstream oss;
-    oss << millis << "-" << grade << "-" << className << "-" << studentNumber;
-    studentKey = oss.str();
-}
-
-std::string Student::getKey() const
+int Student::getKey() const
 {
     return studentKey;
 }
 
-// studentKey는 유지, 나머지만 업데이트
-bool Student::updateInfo(Student& student)
-{
-    this->name = student.name;
-    this->grade = student.grade;
-    this->className = student.className;
-    this->studentNumber = student.studentNumber;
+void Student::setName(const std::string& name) {
+    this->name = name;
+}
+
+void Student::setGrade(const std::string& grade) {
+    this->grade = grade;
+}
+
+void Student::setClassName(const std::string& className) {
+    this->className = className;
+}
+
+void Student::setStudentNumber(const std::string& studentNumber) {
+    this->studentNumber = studentNumber;
+}
+
+void Student::setStudent(
+    const std::string& name,
+    const std::string& grade,
+    const std::string& className,
+    const std::string& studentNumber
+) {
+    setName(name);
+    setGrade(grade);
+    setClassName(className);
+    setStudentNumber(studentNumber);
+}
+
+void Student::setStudent(const Student& updateStudent) {
+    setStudent(
+        updateStudent.name,
+        updateStudent.grade,
+        updateStudent.className,
+        updateStudent.studentNumber
+    ); 
 }
