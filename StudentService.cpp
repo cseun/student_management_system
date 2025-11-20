@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include <stdexcept>
 #include <vector>
+#include "StudentListKey.h"
 #include "StudentStorage.h"
 #include "Student.h"
 #include "StudentService.h"
@@ -8,7 +9,7 @@
 // ListKey -> StudentKey 매핑 조회 -> Student 객체 조회
 
 // 학생 인덱스 존재여부
-bool StudentService::isStudentIndexExist(const std::string& listKey) const
+bool StudentService::isStudentIndexExist(const StudentListKey& listKey) const
 {
 	return searchStudentKey(listKey) != -1;
 }
@@ -19,7 +20,7 @@ bool StudentService::isStudentKeyExist(int studentKey) const
 }
 
 // 학생 키 조회
-int StudentService::searchStudentKey(const std::string& listKey) const
+int StudentService::searchStudentKey(const StudentListKey& listKey) const
 {
 	auto it = studentStorage.studentIndexList.find(listKey);
 	if (it == studentStorage.studentIndexList.end()) {
@@ -27,12 +28,12 @@ int StudentService::searchStudentKey(const std::string& listKey) const
 	}
 	return it->second;
 }
-// 학생 조회
-const std::map<int, Student>&  StudentService::getAllStudents() const
+// 학생 조회 (index 순서 정렬 목록)
+std::vector<std::pair<int, const Student*>> StudentService::getAllStudents() const
 {
-	return studentStorage.getAllStudents();
+	return studentStorage.getAllStudentsIndexOrder();
 }
-const Student* StudentService::searchStudent(const std::string& listKey) const
+const Student* StudentService::searchStudent(const StudentListKey& listKey) const
 {
 	int studentKey = searchStudentKey(listKey);
 	auto it = studentStorage.studentTable.find(studentKey);
@@ -64,17 +65,16 @@ Student& StudentService::addStudent(const Student& student)
 	{
 		throw std::runtime_error("유효하지 않은 학생 키입니다.");
 	}
-	std::string listKey = student.getListKey();
 
 	// 학생 리스트 추가
 	studentStorage.studentTable[id] = student;
 	// 인덱스 추가
-	studentStorage.studentIndexList[listKey] = id;
+	studentStorage.studentIndexList[student.getListKey()] = id;
 	// 저장된 학생 객체 반환
 	return studentStorage.studentTable[id];
 }
 // 학생 업데이트
-Student& StudentService::updateStudent(const std::string& originListKey, const Student& newStudent)
+Student& StudentService::updateStudent(const StudentListKey& originListKey, const Student& newStudent)
 {
 	// 학생 조회
 	const Student* originStudent = searchStudent(originListKey);
@@ -89,7 +89,7 @@ Student& StudentService::updateStudent(const std::string& originListKey, const S
 	}
 
 	// 새로운 학생의 리스트 키 생성
-	std::string newListKey = newStudent.getListKey();
+	StudentListKey newListKey = newStudent.getListKey();
 	if(isStudentIndexExist(newListKey) && originListKey != newListKey)
 	{
 		throw std::runtime_error("업데이트할 학년, 반, 번호에 대한 학생이 이미 존재합니다.");
@@ -110,7 +110,7 @@ Student& StudentService::updateStudent(const std::string& originListKey, const S
 	return student;
 }
 // 학생 삭제
-void StudentService::deleteStudent(const std::string& listKey)
+void StudentService::deleteStudent(const StudentListKey& listKey)
 {
 	// studentKey 조회
 	int studentKey = searchStudentKey(listKey);

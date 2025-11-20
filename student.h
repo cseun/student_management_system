@@ -1,14 +1,15 @@
 ﻿#pragma once
 #include <string>
+#include "StudentListKey.h"
 
 class Student
 {
 private:
     int studentKey = -1; // 기본값
     std::string name;
-    std::string grade;
-    std::string className;
-    std::string studentNumber;
+    int grade;
+    int classNumber;
+    int studentNumber;
 
 public:
     static int studentIndex; // 학생 키 인덱스
@@ -16,26 +17,26 @@ public:
     Student() = default;
     Student(
         std::string& name,
-        std::string& grade,
-        std::string& className,
-        std::string& studentNumber
+        int grade,
+        int classNumber,
+        int studentNumber
     );
 
     int getKey() const;
 
     // Getter
     const std::string& getName() const;
-    const std::string& getGrade() const;
-    const std::string& getClassName() const;
-    const std::string& getStudentNumber() const;
+    const int getGrade() const;
+    const int getClassNumber() const;
+    const int getStudentNumber() const;
 	
     // Setter
     void setName(const std::string& name);
-    void setGrade(const std::string& grade);
-    void setClassName(const std::string& className);
-    void setStudentNumber(const std::string& studentNumber);
+    void setGrade(const int grade);
+    void setClassNumber(const int classNumber);
+    void setStudentNumber(const int studentNumber);
 
     void setStudent(const Student& updateStudent);
-	std::string getListKey() const;
+    StudentListKey Student::getListKey() const;
     bool isSameStudentInfo(const Student& compareStudent) const;
 };
