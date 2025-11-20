@@ -14,4 +14,5 @@ public:
 	// 한 학생에게는 여러 성적 정보가 있다.
 	// 학생 키 studentKey : 학생 성적 객체 배열 StudentScore
 	std::map<int, std::vector<StudentScore>> studentScoreTable;
+	const std::map<int, std::vector<StudentScore>>& getAllScores() const;
 };
