@@ -15,4 +15,6 @@ public:
 	// 인덱스 키 - 인덱스 값 : studentListKey - studentIdx
 	std::map<std::string, int> studentIndexList;
 	std::map<int, Student> studentTable;
+
+	const std::map<int, Student>& getAllStudents() const;
 };
