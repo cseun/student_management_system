@@ -1,22 +1,26 @@
 ﻿#pragma once
-#include <string>
-#include "ExamType.h"
-#include "Student.h"
 
 class StudentScore
 {
 private:
-    int totalScore = 0;
-public:
-    int examId;
-    int kukScore;
-    int engScore;
-    int mathScore;
-    int socialScore;
-    int scienceScore;
+	int studentKey = -1;
+    int examId = -1;
 
+    int kukScore = 0;
+    int engScore = 0;
+    int mathScore = 0;
+    int socialScore = 0;
+    int scienceScore = 0;
+
+    int totalScore = 0;
+
+    void updateTotalScore();
+   
+public:
     StudentScore() = default;
+
     StudentScore(
+        int studentKey,
         int examId,
         int kukScore,
         int engScore,
@@ -25,15 +29,18 @@ public:
         int scienceScore
     );
 
-    void setExamId(const int examId);
-    void setKukScore(const int kukScore);
-    void setEngScore(const int engScore);
-    void setMathScore(const int mathScore);
-    void setSocialScore(const int socialScore);
-    void setScienceScore(const int scienceScore);
+    void setExamId(int examId);
 
     void setScoreInfo(const StudentScore& score);
-    void setScoreInfo(int, int, int, int, int, int);
-    void updateTotalScore();
-    int getTotalScore();
+    void setScoreInfo(int examId, int kukScore, int engScore, int mathScore, int socialScore, int scienceScore);
+    
+    int getExamId() const;
+    int getTotalScore() const;
+    int getKukScore() const;
+    int getEngScore() const;
+    int getMathScore() const;
+    int getSocialScore() const;
+    int getScienceScore() const;
+    
+	bool isSameScore(const StudentScore& compareScore) const;
 };
