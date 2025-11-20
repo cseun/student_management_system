@@ -3,14 +3,14 @@
 class ExamInfo
 {
 private:
-    int examId = 0;
-
-public:
-    static int examIndex;
+    int examId = -1; // 기본값
 
     int year;
     int semester;
     ExamType examType;
+
+public:
+    static int examIndex; //키 증가 인덱스
 
     ExamInfo() = default;
     ExamInfo(
@@ -19,16 +19,16 @@ public:
         ExamType examType
     );
 
+    // Getter
     int getId() const;
-    void setYear(const int year);
-    void setSemester(const int semester);
-    void setExamType(const ExamType ExamType);
+    int getYear() const;
+    int getSemester() const;
+    ExamType getExamType() const;
 
-    void setExamInfo(
-        const int year,
-        const int semester,
-        const ExamType examType
-    );
-    void setExamInfo(const ExamInfo& updateExamInfo);
+    // Setter
+    void setYear(int year);
+    void setSemester(int semester);
+    void setExamType(ExamType ExamType);
+
 	bool isSameExamInfo(const ExamInfo& compareExamInfo) const;
 };
