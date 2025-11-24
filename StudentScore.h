@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "StudentScoreInfoRow.h"
 
 class StudentScore
 {
@@ -20,27 +21,30 @@ public:
     StudentScore() = default;
 
     StudentScore(
-        int studentKey,
-        int examId,
         int kukScore,
         int engScore,
         int mathScore,
         int socialScore,
-        int scienceScore
+        int scienceScore,
+        int studentKey = -1,
+        int examId = -1
     );
 
-    void setExamId(int examId);
+    StudentScore(StudentScoreInfoRow& studentScoreInfoRow);
 
-    void setScoreInfo(const StudentScore& score);
+    void setExamId(int examId);
+    void setStudentKey(int studentKey);
+
+    void setScoreInfo(StudentScore& score);
     void setScoreInfo(int examId, int kukScore, int engScore, int mathScore, int socialScore, int scienceScore);
     
-    int getExamId() const;
-    int getTotalScore() const;
-    int getKukScore() const;
-    int getEngScore() const;
-    int getMathScore() const;
-    int getSocialScore() const;
-    int getScienceScore() const;
+    int getExamId();
+    int getTotalScore();
+    int getKukScore();
+    int getEngScore();
+    int getMathScore();
+    int getSocialScore();
+    int getScienceScore();
     
-	bool isSameScore(const StudentScore& compareScore) const;
+	bool isSameScore(StudentScore& compareScore);
 };

@@ -17,6 +17,6 @@ public:
 	std::map<StudentListKey, int> studentIndexList; // 학생 리스트 키 순서대로 정렬 -> map
 	std::map<int, Student> studentTable; // 학생 키 순서대로 정렬 -> map
 
-	const std::map<int, Student>& getAllStudents() const; //학생 키 순서대로 정렬된 학생 목록
-	const std::vector<std::pair<int, const Student*>> getAllStudentsIndexOrder() const; // 리스트 키 순서대로 정렬된 학생 목록
+	std::map<int, Student>& getAllStudents(); //학생 키 순서대로 정렬된 학생 목록
+	std::vector<std::pair<int, Student*>> getAllStudentsIndexOrder(); // 리스트 키 순서대로 정렬된 학생 목록
 };

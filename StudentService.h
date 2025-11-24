@@ -11,15 +11,15 @@ class StudentService
 private:
 	StudentStorage studentStorage;
 public:
-	bool isStudentIndexExist(const StudentListKey& listKey) const;
-	bool isStudentKeyExist(int studentKey) const;
-	int searchStudentKey(const StudentListKey& listKey) const;
+	bool isStudentIndexExist(StudentListKey& listKey);
+	bool isStudentKeyExist(int studentKey);
+	int searchStudentKey(StudentListKey& listKey);
 
-	std::vector<std::pair<int, const Student*>> getAllStudents() const;
-	const Student* searchStudent(const StudentListKey& listKey) const;
-	const Student* searchStudentByKey(int studentKey) const;
+	std::vector<std::pair<int, Student*>> getAllStudents();
+	Student* searchStudent(StudentListKey& listKey);
+	Student* searchStudentByKey(int studentKey);
 	
-	Student& addStudent(const Student& student);
-	Student& updateStudent(const StudentListKey& originListKey, const Student& newStudent);
-	void deleteStudent(const StudentListKey& listKey);
+	Student& addStudent(Student& student);
+	Student& updateStudent(Student& targetStudent, Student& newStudent);
+	void deleteStudent(StudentListKey& listKey);
 };

@@ -28,7 +28,7 @@ struct StudentScoreInfoRow
 	{
 		return { "학년", "반", "번호", "이름", "년도", "학기", "시험종류", "국어", "영어", "수학", "사회", "과학", "총점", "등수" };
 	}
-	const std::vector<std::string> toVector() const {
+	std::vector<std::string> toVector() {
 		return {
 			grade, 
 			classNumber, 
@@ -46,7 +46,7 @@ struct StudentScoreInfoRow
 			rank
 		};
 	}
-	const StudentListKey getListKey() const
+	StudentListKey getListKey()
 	{
 		return StudentListKey{
 			std::stoi(grade),

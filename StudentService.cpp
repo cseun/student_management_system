@@ -9,18 +9,18 @@
 // ListKey -> StudentKey 매핑 조회 -> Student 객체 조회
 
 // 학생 인덱스 존재여부
-bool StudentService::isStudentIndexExist(const StudentListKey& listKey) const
+bool StudentService::isStudentIndexExist(StudentListKey& listKey)
 {
 	return searchStudentKey(listKey) != -1;
 }
 // 학생 키 존재여부
-bool StudentService::isStudentKeyExist(int studentKey) const
+bool StudentService::isStudentKeyExist(int studentKey)
 {
 	return studentStorage.studentTable.find(studentKey) != studentStorage.studentTable.end();
 }
 
 // 학생 키 조회
-int StudentService::searchStudentKey(const StudentListKey& listKey) const
+int StudentService::searchStudentKey(StudentListKey& listKey)
 {
 	auto it = studentStorage.studentIndexList.find(listKey);
 	if (it == studentStorage.studentIndexList.end()) {
@@ -29,11 +29,11 @@ int StudentService::searchStudentKey(const StudentListKey& listKey) const
 	return it->second;
 }
 // 학생 조회 (index 순서 정렬 목록)
-std::vector<std::pair<int, const Student*>> StudentService::getAllStudents() const
+std::vector<std::pair<int, Student*>> StudentService::getAllStudents()
 {
 	return studentStorage.getAllStudentsIndexOrder();
 }
-const Student* StudentService::searchStudent(const StudentListKey& listKey) const
+Student* StudentService::searchStudent(StudentListKey& listKey)
 {
 	int studentKey = searchStudentKey(listKey);
 	auto it = studentStorage.studentTable.find(studentKey);
@@ -43,7 +43,7 @@ const Student* StudentService::searchStudent(const StudentListKey& listKey) cons
 	}
 	return nullptr;
 }
-const Student* StudentService::searchStudentByKey(int studentKey) const
+Student* StudentService::searchStudentByKey(int studentKey)
 {
 	auto it = studentStorage.studentTable.find(studentKey);
 	if (it != studentStorage.studentTable.end())
@@ -54,48 +54,42 @@ const Student* StudentService::searchStudentByKey(int studentKey) const
 	return nullptr;
 }
 // 학생 추가
-Student& StudentService::addStudent(const Student& student)
+Student& StudentService::addStudent(Student& student)
 {
-	int id = student.getKey();
-	if(isStudentKeyExist(id))
-	{
+	Student newStudent = student;
+	StudentListKey listKey = newStudent.getListKey();
+	if(isStudentIndexExist(listKey))
 		throw std::runtime_error("이미 존재하는 학생 키입니다.");
-	}
-	if(id == -1)
-	{
-		throw std::runtime_error("유효하지 않은 학생 키입니다.");
-	}
 
+	if (newStudent.getKey() == -1)
+		newStudent.setKey(); // 학생 키 설정
+
+	int studentKey = newStudent.getKey();
 	// 학생 리스트 추가
-	studentStorage.studentTable[id] = student;
+	studentStorage.studentTable[studentKey] = newStudent;
 	// 인덱스 추가
-	studentStorage.studentIndexList[student.getListKey()] = id;
+	studentStorage.studentIndexList[newStudent.getListKey()] = studentKey;
 	// 저장된 학생 객체 반환
-	return studentStorage.studentTable[id];
+	return studentStorage.studentTable[studentKey];
 }
 // 학생 업데이트
-Student& StudentService::updateStudent(const StudentListKey& originListKey, const Student& newStudent)
+Student& StudentService::updateStudent(Student& targetStudent, Student& newStudent)
 {
-	// 학생 조회
-	const Student* originStudent = searchStudent(originListKey);
-	if(originStudent == nullptr)
-	{
-		throw std::runtime_error("업데이트할 학생이 존재하지 않습니다.");
-	}
 	// 동일한 학생 정보인지 확인
-	if(originStudent->isSameStudentInfo(newStudent))
+	if(targetStudent.isSameStudentInfo(newStudent))
 	{
-		throw std::runtime_error("업데이트할 학생 정보가 동일합니다.");
+		return targetStudent;
 	}
 
 	// 새로운 학생의 리스트 키 생성
+	StudentListKey originListKey = targetStudent.getListKey();
 	StudentListKey newListKey = newStudent.getListKey();
 	if(isStudentIndexExist(newListKey) && originListKey != newListKey)
 	{
 		throw std::runtime_error("업데이트할 학년, 반, 번호에 대한 학생이 이미 존재합니다.");
 	}
 
-	auto it = studentStorage.studentTable.find(originStudent->getKey());
+	auto it = studentStorage.studentTable.find(targetStudent.getKey());
 	if (it == studentStorage.studentTable.end())
 	{
 		throw std::runtime_error("학생 키에 해당하는 학생정보를 찾아오지 못하였습니다.");
@@ -110,7 +104,7 @@ Student& StudentService::updateStudent(const StudentListKey& originListKey, cons
 	return student;
 }
 // 학생 삭제
-void StudentService::deleteStudent(const StudentListKey& listKey)
+void StudentService::deleteStudent(StudentListKey& listKey)
 {
 	// studentKey 조회
 	int studentKey = searchStudentKey(listKey);

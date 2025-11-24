@@ -1,42 +1,47 @@
 ﻿#pragma once
 #include <string>
+#include "StudentScoreInfoRow.h"
 #include "StudentListKey.h"
 
 class Student
 {
 private:
     int studentKey = -1; // 기본값
-    std::string name;
-    int grade;
-    int classNumber;
-    int studentNumber;
+
+    std::string name = "";
+    int grade = 0;
+    int classNumber = 0;
+    int studentNumber = 0;
 
 public:
     static int studentIndex; // 학생 키 인덱스
 
     Student() = default;
     Student(
-        std::string& name,
+        std::string name,
         int grade,
         int classNumber,
         int studentNumber
-    );
+	);
 
-    int getKey() const;
+    Student(StudentScoreInfoRow& studentScoreInfoRow);
+
+    int getKey();
 
     // Getter
-    const std::string& getName() const;
-    const int getGrade() const;
-    const int getClassNumber() const;
-    const int getStudentNumber() const;
+    std::string& getName();
+    int getGrade();
+    int getClassNumber();
+    int getStudentNumber();
 	
     // Setter
-    void setName(const std::string& name);
-    void setGrade(const int grade);
-    void setClassNumber(const int classNumber);
-    void setStudentNumber(const int studentNumber);
+	void setKey();
+    void setName(std::string& name);
+    void setGrade(int grade);
+    void setClassNumber(int classNumber);
+    void setStudentNumber(int studentNumber);
 
-    void setStudent(const Student& updateStudent);
-    StudentListKey Student::getListKey() const;
-    bool isSameStudentInfo(const Student& compareStudent) const;
+    void setStudent(Student& updateStudent);
+    StudentListKey getListKey();
+    bool isSameStudentInfo(Student& compareStudent);
 };

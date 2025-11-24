@@ -1,9 +1,9 @@
 ﻿#pragma once
 struct StudentListKey
 {
-	int grade;
-	int classNumber;
-	int studentNumber;
+	int grade = 0;
+	int classNumber = 0;
+	int studentNumber = 0;
 
 	bool operator<(const StudentListKey& other) const
 	{

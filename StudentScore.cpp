@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include <string>
+#include "StudentScoreInfoRow.h"
 #include "StudentScore.h"
 
 void StudentScore::updateTotalScore()
@@ -8,23 +9,34 @@ void StudentScore::updateTotalScore()
 }
 
 StudentScore::StudentScore(
-    int studentKey,
-    int examId,
     int kukScore,
     int engScore,
     int mathScore,
     int socialScore,
-    int scienceScore
+    int scienceScore,
+    int studentKey,
+    int examId
 ) :
-    studentKey(studentKey),
-    examId(examId),
     kukScore(kukScore),
     engScore(engScore),
     mathScore(mathScore),
     socialScore(socialScore),
-    scienceScore(scienceScore)
+    scienceScore(scienceScore),
+    studentKey(studentKey),
+    examId(examId)
 {
     updateTotalScore();
+}
+
+StudentScore::StudentScore(StudentScoreInfoRow& studentScoreInfoRow)
+    : kukScore(std::stoi(studentScoreInfoRow.kukScore)),
+    engScore(std::stoi(studentScoreInfoRow.engScore)),
+    mathScore(std::stoi(studentScoreInfoRow.mathScore)),
+    socialScore(std::stoi(studentScoreInfoRow.socialScore)),
+    scienceScore(std::stoi(studentScoreInfoRow.scienceScore)),
+    studentKey(-1),
+    examId(-1)
+{
 }
 
 void StudentScore::setExamId(int examId)
@@ -32,7 +44,12 @@ void StudentScore::setExamId(int examId)
 	this->examId = examId;
 }
 
-void StudentScore::setScoreInfo(const StudentScore& updateScore)
+void StudentScore::setStudentKey(int studentKey)
+{
+    this->studentKey = studentKey;
+}
+
+void StudentScore::setScoreInfo(StudentScore& updateScore)
 {
     this->examId = updateScore.examId;
     this->kukScore = updateScore.kukScore;
@@ -62,15 +79,15 @@ void StudentScore::setScoreInfo(
     updateTotalScore();
 }
 
-int StudentScore::getExamId() const { return examId; }
-int StudentScore::getTotalScore() const { return totalScore; }
-int StudentScore::getKukScore() const { return kukScore; }
-int StudentScore::getEngScore() const { return engScore; }
-int StudentScore::getMathScore() const { return mathScore; }
-int StudentScore::getSocialScore() const { return socialScore; }
-int StudentScore::getScienceScore() const { return scienceScore; }
+int StudentScore::getExamId() { return examId; }
+int StudentScore::getTotalScore() { return totalScore; }
+int StudentScore::getKukScore() { return kukScore; }
+int StudentScore::getEngScore() { return engScore; }
+int StudentScore::getMathScore() { return mathScore; }
+int StudentScore::getSocialScore() { return socialScore; }
+int StudentScore::getScienceScore() { return scienceScore; }
 
-bool StudentScore::isSameScore(const StudentScore& compareScore) const
+bool StudentScore::isSameScore(StudentScore& compareScore)
 {
     return (this->examId == compareScore.examId) &&
         (this->kukScore == compareScore.kukScore) &&

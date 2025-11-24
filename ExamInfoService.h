@@ -5,13 +5,13 @@ class ExamInfoService
 private:
 	ExamInfoStorage examInfoStorage;
 public:
-	bool isExamExist(const ExamInfo& examInfo) const;
+	bool isExamInfoExist(ExamInfo& examInfo);
 	// nullptr 반환 가능
-	const ExamInfo* searchExamInfoById(int examId) const;
-	const ExamInfo* searchExamInfo(const ExamInfo& examInfo) const;
-	const ExamInfo* searchExamInfo(int year,int semester, ExamType examType) const;
+	ExamInfo* searchExamInfoById(int examId);
+	ExamInfo* searchExamInfo(ExamInfo& examInfo);
+	ExamInfo* searchExamInfo(int year,int semester, ExamType examType);
 	
-	ExamInfo& updateExamInfo(int originExamId, const ExamInfo& updateExam);
-	ExamInfo& addExamInfo(const ExamInfo& examInfo);
+	ExamInfo& updateExamInfo(int originExamId, ExamInfo& updateExam);
+	ExamInfo& addExamInfo(ExamInfo& examInfo);
 	void deleteExamInfo(int examId);
 };

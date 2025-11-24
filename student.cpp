@@ -1,41 +1,53 @@
 ﻿#include "pch.h"
 #include <string>
 #include <sstream>
+#include "StudentScoreInfoRow.h"
 #include "StudentListKey.h"
 #include "Student.h"
 
 int Student::studentIndex = 0;  // 정적 멤버 정의 및 초기화
 
 Student::Student(
-    std::string& name,
+    std::string name,
     int grade,
     int classNumber,
     int studentNumber
 ) : name(name), grade(grade), classNumber(classNumber), studentNumber(studentNumber)
 {
-    studentKey = ++studentIndex;  // 학생 생성 시 자동 증가 (AUTO_INCREMENT)
 }
 
-int Student::getKey() const { return studentKey; }
+Student::Student(StudentScoreInfoRow& studentScoreInfoRow) :
+    name(studentScoreInfoRow.name),
+    grade(std::stoi(studentScoreInfoRow.grade)),
+    classNumber(std::stoi(studentScoreInfoRow.classNumber)),
+    studentNumber(std::stoi(studentScoreInfoRow.studentNumber))
+{
+}
 
-const std::string& Student::getName() const { return name; }
-const int Student::getGrade() const { return grade; }
-const int Student::getClassNumber() const { return classNumber; }
-const int Student::getStudentNumber() const { return studentNumber; }
+int Student::getKey() { return studentKey; }
 
-void Student::setName(const std::string& name) { this->name = name; }
-void Student::setGrade(const int grade) { this->grade = grade; }
-void Student::setClassNumber(const int classNumber) { this->classNumber = classNumber; }
-void Student::setStudentNumber(const int studentNumber) { this->studentNumber = studentNumber; }
+std::string& Student::getName() { return name; }
+int Student::getGrade() { return grade; }
+int Student::getClassNumber() { return classNumber; }
+int Student::getStudentNumber() { return studentNumber; }
 
-void Student::setStudent(const Student& updateStudent) {
+void Student::setKey()
+{
+	this->studentKey = ++studentIndex; // 학생 키 자동 증가
+}
+void Student::setName(std::string& name) { this->name = name; }
+void Student::setGrade(int grade) { this->grade = grade; }
+void Student::setClassNumber(int classNumber) { this->classNumber = classNumber; }
+void Student::setStudentNumber(int studentNumber) { this->studentNumber = studentNumber; }
+
+void Student::setStudent(Student& updateStudent) {
     name = updateStudent.name;
     grade = updateStudent.grade;
     classNumber = updateStudent.classNumber;
     studentNumber = updateStudent.studentNumber;
 }
 
-StudentListKey Student::getListKey() const {
+StudentListKey Student::getListKey() {
     return StudentListKey{
         grade,
         classNumber,
@@ -43,7 +55,7 @@ StudentListKey Student::getListKey() const {
 	};
 }
 
-bool Student::isSameStudentInfo(const Student& compareStudent) const
+bool Student::isSameStudentInfo(Student& compareStudent)
 {
     return (this->grade == compareStudent.grade) &&
         (this->classNumber == compareStudent.classNumber) &&

@@ -3,7 +3,7 @@
 #include <vector>
 #include "StudentScoreStorage.h"
 
-const std::map<int, std::vector<StudentScore>>& StudentScoreStorage::getAllScores() const
+std::map<int, std::vector<StudentScore>>& StudentScoreStorage::getAllScores()
 {
 	return studentScoreTable;
 }
