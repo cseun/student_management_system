@@ -14,7 +14,7 @@ public:
 	StudentScore* searchStudentExamScore(int studentKey, int examId);
 	std::vector<StudentScore>* searchStudentScores(int studentKey);
 	
-	StudentScore& addStudentScore(int studentKey, int examId, StudentScore& score); // 추가 전 score의 examId를 세팅
-	StudentScore& updateStudentScore(int studentKey, int examId, StudentScore& updateScore); // 추가 전 score의 examId를 세팅
+	StudentScore& addStudentScore(int studentKey, int examId, StudentScore& score);
+	StudentScore& updateStudentScore(int studentKey, int examId, StudentScore& updateScore);
 	void deleteStudentScore(int studentKey, int examId);
 };
