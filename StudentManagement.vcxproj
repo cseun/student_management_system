@@ -193,12 +193,9 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Student.h" />
-    <ClInclude Include="StudentController.h" />
     <ClInclude Include="StudentListKey.h" />
-    <ClInclude Include="StudentScoreController.h" />
     <ClInclude Include="StudentScoreInfo.h" />
     <ClInclude Include="StudentScoreInfoController.h" />
-    <ClInclude Include="StudentScoreInfoList.h" />
     <ClInclude Include="StudentScoreInfoService.h" />
     <ClInclude Include="StudentScoreInfoRow.h" />
     <ClInclude Include="StudentScoreService.h" />
@@ -220,12 +217,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Student.cpp" />
-    <ClCompile Include="StudentController.cpp" />
     <ClCompile Include="StudentScoreInfo.cpp" />
     <ClCompile Include="StudentScoreInfoController.cpp" />
-    <ClCompile Include="StudentScoreInfoList.cpp" />
     <ClCompile Include="StudentScore.cpp" />
-    <ClCompile Include="StudentScoreController.cpp" />
     <ClCompile Include="StudentManagement.cpp" />
     <ClCompile Include="StudentManagementDlg.cpp" />
     <ClCompile Include="StudentScoreInfoService.cpp" />

@@ -37,6 +37,9 @@
     <Filter Include="소스 파일\Storage">
       <UniqueIdentifier>{d47ea9c1-d5c9-4f07-9745-85c21bb4a5c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\Utils">
+      <UniqueIdentifier>{0e42be8b-575f-4048-b17c-92d388b33955}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StudentManagement.h">
@@ -57,20 +60,8 @@
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="FileManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="StudentScoreInfoList.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Convert.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="StudentService.h">
       <Filter>헤더 파일\Service</Filter>
-    </ClInclude>
-    <ClInclude Include="StudentController.h">
-      <Filter>헤더 파일\Controller</Filter>
     </ClInclude>
     <ClInclude Include="Student.h">
       <Filter>헤더 파일\Model</Filter>
@@ -83,9 +74,6 @@
     </ClInclude>
     <ClInclude Include="ExamType.h">
       <Filter>헤더 파일\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="StudentScoreController.h">
-      <Filter>헤더 파일\Controller</Filter>
     </ClInclude>
     <ClInclude Include="StudentScoreStorage.h">
       <Filter>헤더 파일\Storage</Filter>
@@ -117,6 +105,12 @@
     <ClInclude Include="StudentListKey.h">
       <Filter>헤더 파일\Model</Filter>
     </ClInclude>
+    <ClInclude Include="FileManager.h">
+      <Filter>헤더 파일\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Convert.h">
+      <Filter>헤더 파일\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StudentManagement.cpp">
@@ -127,12 +121,6 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="StudentScoreInfoList.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="StudentController.cpp">
-      <Filter>소스 파일\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Student.cpp">
       <Filter>소스 파일\Model</Filter>
@@ -160,9 +148,6 @@
     </ClCompile>
     <ClCompile Include="StudentStorage.cpp">
       <Filter>소스 파일\Storage</Filter>
-    </ClCompile>
-    <ClCompile Include="StudentScoreController.cpp">
-      <Filter>소스 파일\Controller</Filter>
     </ClCompile>
     <ClCompile Include="StudentScoreInfoController.cpp">
       <Filter>소스 파일\Controller</Filter>
