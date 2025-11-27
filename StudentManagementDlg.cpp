@@ -444,6 +444,9 @@ void CStudentManagementDlg::resetStudentEditCtl()
 // 학생 추가 버튼 클릭
 void CStudentManagementDlg::OnBnClickedButtonAdd()
 {
+	//int* p = nullptr;
+	//*p = 123;   // 강제 크래시 덤프 테스트
+
 	try {
 		// 뷰에서 학생, 성적 정보를 가져옴
 		StudentScoreInfoRow originRow = getRowData();
