@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "StudentScoreInfoService.h"
 #include "StudentScoreInfoController.h"
+#include "FileManager.h"
 
 
 StudentScoreInfoController::StudentScoreInfoController(StudentScoreInfoService& service)
@@ -101,7 +102,6 @@ void StudentScoreInfoController::setRanks(std::vector<StudentScoreInfo>& cachedI
 		}
 	}
 }
-//void filterAndsortBy();
 
 StudentScoreInfoRow StudentScoreInfoController::studentScoreInfoToRow(StudentScoreInfo& info)
 {
@@ -238,3 +238,110 @@ void StudentScoreInfoController::deleteStudentScoreInfo(std::string& listKey, in
 		);
 	}
 }
+void StudentScoreInfoController::deleteAllStudentScoreInfos()
+{
+	try {
+		studentScoreInfoService.deleteAllStudentScoreInfos();
+		
+		// 캐시 갱신
+		resetCachedInfos();
+	}
+	catch (const std::exception& e)
+	{
+		throw std::runtime_error(
+			std::string("[학생 시험 성적 정보 전체 삭제 중 오류 발생]\n") + e.what()
+		);
+	}
+}
+
+void StudentScoreInfoController::loadFromFile(std::string& path)
+{
+	try {
+		std::vector<std::vector<std::string>> fileRows;
+
+		std::string fileType = FileManager::getFileType(path);
+
+		if (fileType == "csv")
+		{
+			fileRows = FileManager::loadFromCSV(path);
+		}
+		else
+		{
+			throw std::runtime_error("지원하지 않는 파일 형식입니다.");
+		}
+
+		if (fileRows.empty())
+		{
+			throw std::runtime_error("읽어온 파일의 값이 없습니다.");
+		}
+
+		// 헤더는 skip
+		for (int r = 1; r < fileRows.size(); ++r)
+		{
+			const auto& row = fileRows[r];
+
+			// 컬럼 개수 확인
+			if (row.size() < 14)
+				throw std::runtime_error("불러올 파일의 컬럼 개수가 충분하지 않습니다.");
+
+			StudentScoreInfoRow infoRow;
+			int i = 0;
+			infoRow.grade = row[i++];
+			infoRow.classNumber = row[i++];
+			infoRow.studentNumber = row[i++];
+			infoRow.name = row[i++];
+			infoRow.year = row[i++];
+			infoRow.semester = row[i++];
+			infoRow.examTypeName = row[i++];
+			infoRow.examType = std::to_string((int)getExamTypeFromName(infoRow.examTypeName));
+			infoRow.kukScore = row[i++];
+			infoRow.engScore = row[i++];
+			infoRow.mathScore = row[i++];
+			infoRow.socialScore = row[i++];
+			infoRow.scienceScore = row[i++];
+
+			addStudentScoreInfo(infoRow);
+		}
+	}
+	catch (const std::exception& e)
+	{
+		throw std::runtime_error(
+			std::string("[불러온 파일 데이터를 맵핑하는 중 오류 발생]\n") + e.what()
+		);
+	}
+
+	// 캐시 갱신
+	resetCachedInfos();
+}
+void StudentScoreInfoController::saveToFile(std::string& path)
+{
+	try {
+		std::vector<std::vector<std::string>> fileRows;
+		fileRows.push_back(StudentScoreInfoRow::getAttributeNames());
+		
+		for (StudentScoreInfo& cache : cachedStudentScoreInfos)
+		{
+			StudentScoreInfoRow row = studentScoreInfoToRow(cache);
+			fileRows.push_back(row.toVector());
+		}
+		
+		std::string fileType = FileManager::getFileType(path);
+
+		if (fileType == "csv")
+		{
+			FileManager::saveToCSV(path, fileRows);
+		}
+		else
+		{
+			throw std::runtime_error("지원하지 않는 파일 형식입니다.");
+		}
+
+	}
+	catch (const std::exception& e)
+	{
+		throw std::runtime_error(
+			std::string("[불러온 파일 데이터를 맵핑하는 중 오류 발생]\n") + e.what()
+		);
+	}
+}
+		

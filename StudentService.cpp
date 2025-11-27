@@ -124,3 +124,8 @@ void StudentService::deleteStudent(StudentListKey& listKey)
 		throw std::runtime_error("삭제할 학생이 없습니다.");
 	}
 }
+
+void StudentService::deleteAllStudents()
+{
+	studentStorage.studentTable.clear();
+}

@@ -71,3 +71,8 @@ void ExamInfoService::deleteExamInfo(int examId)
         throw std::runtime_error("시험 ID에 해당하는 시험정보를 삭제하기 못하였습니다.");
 	}
 }
+
+void ExamInfoService::deleteAllExams()
+{
+    examInfoStorage.examInfoTable.clear();
+}

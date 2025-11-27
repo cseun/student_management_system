@@ -14,4 +14,5 @@ public:
 	ExamInfo& updateExamInfo(int originExamId, ExamInfo& updateExam);
 	ExamInfo& addExamInfo(ExamInfo& examInfo);
 	void deleteExamInfo(int examId);
+	void deleteAllExams();
 };

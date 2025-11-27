@@ -54,11 +54,11 @@ public:
 	StudentScoreInfoRow addStudentScoreInfo(StudentScoreInfoRow& row);
 	StudentScoreInfoRow updateStudentScoreInfo(std::string& listKey, int examId, StudentScoreInfoRow& updateRow);
 	void deleteStudentScoreInfo(std::string& listKey, int examId);
+	void deleteAllStudentScoreInfos();
 
-	// 학생 성적 csv 불러오기 버튼
+	// 학생 성적 파일 불러오기
+	void loadFromFile(std::string& path);
+	
 	// 학생 성적 csv 저장하기 버튼
-
-	// 처음에 프로그램을 시작할 때, 먼저 조회해서 리스트를 받아온다.
-	// 뷰에서는 데이터 CUD 작업이 발생할 때를 제외하고는 불러온 리스트를 사용하여 처리한다.
-
+	void saveToFile(std::string& path);
 };

@@ -14,7 +14,8 @@ public:
 	StudentScore* searchStudentExamScore(int studentKey, int examId);
 	std::vector<StudentScore>* searchStudentScores(int studentKey);
 	
-	StudentScore& addStudentScore(int studentKey, int examId, StudentScore& score);
+	StudentScore& addStudentScore(StudentScore& score);
 	StudentScore& updateStudentScore(int studentKey, int examId, StudentScore& updateScore);
 	void deleteStudentScore(int studentKey, int examId);
+	void deleteAllScores();
 };

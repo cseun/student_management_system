@@ -98,6 +98,8 @@ void CStudentManagementDlg::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxInt(pDX, m_semester, 1, 3);
 	DDX_CBString(pDX, IDC_COMBO_EXAM_TYPE, m_exam_type);
 	DDX_Control(pDX, IDC_COMBO_EXAM_TYPE, m_exam_type_ctl);
+	DDX_Control(pDX, IDC_BUTTON_SAVE, m_button_save);
+	DDX_Control(pDX, IDC_BUTTON_DELETE, m_button_delete);
 }
 
 BEGIN_MESSAGE_MAP(CStudentManagementDlg, CDialogEx)
@@ -107,8 +109,8 @@ BEGIN_MESSAGE_MAP(CStudentManagementDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_ADD, &CStudentManagementDlg::OnBnClickedButtonAdd)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CStudentManagementDlg::OnBnClickedButtonSave)
 	ON_BN_CLICKED(IDC_BUTTON_DELETE, &CStudentManagementDlg::OnBnClickedButtonDelete)
-	//ON_BN_CLICKED(IDC_BUTTON_LOAD_FILE, &CStudentManagementDlg::OnClickedButtonLoadFile)
-	//ON_BN_CLICKED(IDC_BUTTON_SAVE_FILE, &CStudentManagementDlg::OnClickedButtonSaveFile)
+	ON_BN_CLICKED(IDC_BUTTON_LOAD_FILE, &CStudentManagementDlg::OnClickedButtonLoadFile)
+	ON_BN_CLICKED(IDC_BUTTON_SAVE_FILE, &CStudentManagementDlg::OnClickedButtonSaveFile)
 	ON_NOTIFY(NM_CLICK, IDC_LIST_STUDENT, &CStudentManagementDlg::OnClickListStudent)
 END_MESSAGE_MAP()
 
@@ -148,6 +150,10 @@ BOOL CStudentManagementDlg::OnInitDialog()
 	createStudentScoreList(); // 리스트 생성
 	reloadStudentScoreList(); // 리스트 초기화
 	loadExamTypeComboBox(); // 시험 항목 선택 박스 초기화
+
+	m_button_save.EnableWindow(FALSE); // 수정 버튼 비활성화 
+	m_button_delete.EnableWindow(FALSE); // 삭제 버튼 비활성화
+
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -228,6 +234,7 @@ void CStudentManagementDlg::createStudentScoreList()
 	// 성적 리스트 제작 (열)
 	CRect rt; //리스트 컨트롤 크기를 가져올 변수
 	m_studentInfoListCtl.GetWindowRect(&rt);
+	m_studentInfoListCtl.ModifyStyle(0, LVS_SHOWSELALWAYS);
 	m_studentInfoListCtl.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT); //리스트 컨트롤 선표시 및 item 선택시 한 행 전체 선택
 
 	std::vector<std::string> attributeNames = ::StudentScoreInfoRow::getAttributeNames();
@@ -434,25 +441,6 @@ void CStudentManagementDlg::resetStudentEditCtl()
 	UpdateData(FALSE);
 }
 
-/*
-1) 뷰에서 학생 정보 읽어온다. getStudentInfo
-2) 뷰에서 학생 성적 정보를 읽어온다. getStudentScoreInfo
-3) 학생을 추가한다.
-	- studentRow -> studet 변환
-	- studentList 에 student 추가
-4) 학생 성적을 추가한다.
-	- scoreRow -> score 변환
-	- socreList 에 score 추가
-3) 학생이 추가되면 학생 리스트와 학생 성적 리스트를 업데이트한다.
-	- 
-	- 
-4) 학생 리스트 뷰를 업데이트한다.
-5) 추가가 안되면 추가 안된 이유 안내(return { true / false, errorContext })
-	- 학생이 이미 존재하는가 ?
-	-입력 값이 잘못되었는가 ?
-	-학생 추가 중 문제가 발생하였는가 ?
-*/
-
 // 학생 추가 버튼 클릭
 void CStudentManagementDlg::OnBnClickedButtonAdd()
 {
@@ -472,13 +460,8 @@ void CStudentManagementDlg::OnBnClickedButtonAdd()
 
 	reloadStudentScoreList();
 
-	// 새로 추가된 항목 = 마지막 행 선택
-	int lastIndex = m_studentInfoListCtl.GetItemCount() - 1;
-	if (lastIndex >= 0)
-	{
-		m_studentInfoListCtl.SetItemState(lastIndex, LVIS_SELECTED, LVIS_SELECTED);
-		m_studentInfoListCtl.EnsureVisible(lastIndex, FALSE);
-	}
+	m_button_save.EnableWindow(FALSE); // 수정 버튼 비활성화 
+	m_button_delete.EnableWindow(FALSE); // 삭제 버튼 비활성화
 }
 
 // 학생 수정 버튼 클릭
@@ -499,10 +482,12 @@ void CStudentManagementDlg::OnBnClickedButtonSave()
 	}
 	catch (const std::exception& e)
 	{
-		TRACE(e.what());
 		CString msg = Convert::StdStringToCString(e.what());
 		AfxMessageBox(msg);
 	}
+
+	m_button_save.EnableWindow(FALSE); // 수정 버튼 비활성화
+	m_button_delete.EnableWindow(FALSE); // 삭제 버튼 비활성화
 
 	reloadStudentScoreList();
 }
@@ -544,13 +529,14 @@ void CStudentManagementDlg::OnBnClickedButtonDelete()
 
 		// 학생 성적 정보 삭제
 		studentScoreInfoController.deleteStudentScoreInfo(listKeyStr, examId);
+
+		m_button_save.EnableWindow(FALSE); // 수정 버튼 비활성화 
+		m_button_delete.EnableWindow(FALSE); // 삭제 버튼 비활성화
 	}
 	catch (const std::exception& e)
 	{
-		TRACE(e.what());
 		CString msg = Convert::StdStringToCString(e.what());
 		AfxMessageBox(msg);
-		return;
 	}
 
 	reloadStudentScoreList();
@@ -566,6 +552,9 @@ void CStudentManagementDlg::OnClickListStudent(NMHDR* pNMHDR, LRESULT* pResult)
 		int selectIdx = pNMItemActivate->iItem; // 클릭된 행 인덱스
 
 		if (selectIdx >= 0) {
+			m_button_save.EnableWindow(TRUE); // 수정 버튼 활성화 
+			m_button_delete.EnableWindow(TRUE); // 삭제 버튼 활성화
+
 			CString listKeyCstr = m_studentInfoListCtl.GetItemText(selectIdx, 0); // 행에 저장한 listKey값 가져오기
 			CString examIdCstr = m_studentInfoListCtl.GetItemText(selectIdx, 1); // 행에 저장한 examId값 가져오기
 			std::string listKeyStr = Convert::CStringToStdString(listKeyCstr);
@@ -579,6 +568,8 @@ void CStudentManagementDlg::OnClickListStudent(NMHDR* pNMHDR, LRESULT* pResult)
 				setStudentData(row);
 			} else {
 				AfxMessageBox(_T("학생 성적 정보를 찾을 수 없습니다."));
+				m_button_save.EnableWindow(FALSE); // 수정 버튼 비활성화 
+				m_button_delete.EnableWindow(FALSE); // 삭제 버튼 비활성화
 			}
 		}
 	}
@@ -591,68 +582,65 @@ void CStudentManagementDlg::OnClickListStudent(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-//// 파일(학생 리스트) 불러오기
-//void CStudentManagementDlg::OnClickedButtonLoadFile()
-//{
-//	// 1) 기본적으로 제공하는 파일 라이브러리 사용
-//	// 2) csv 파일만 불러오도록 제한
-//	// 3) 파일 양식은 다운된 파일을 기준으로 한다.
-//	//		- 가장 상단 행 제외 (목록)
-//	//		- 정의된 열 순서대로 데이터 배치되어있을 것
-//	// 4) 파일 불러오는 중 오류 발생시 오류 안내
-//	CFileDialog dlg(TRUE, _T("csv"), nullptr,
-//		OFN_FILEMUSTEXIST | OFN_HIDEREADONLY,
-//		_T("CSV Files (*.csv)|*.csv|All Files (*.*)|*.*||"),
-//		this);
-//
-//	if (dlg.DoModal() != IDOK)
-//		return;
-//
-//	CString filePath = dlg.GetPathName();
-//	CT2CA converted(filePath, CP_UTF8);
-//	std::string path(converted);
-//
-//	std::vector<StudentScoreInfoList::StudentScoreInfoRow> studentScoreInfoRows = studentScoreInfoList.loadStudentScoreInfosFromFile(path);
-//	if (studentScoreInfoRows.size() > 0)
-//	{
-//		AfxMessageBox(_T("CSV 파일을 성공적으로 불러왔습니다."));
-//		reloadStudentScoreList(); // 리스트 초기화
-//	}
-//	else
-//	{
-//		AfxMessageBox(_T("CSV 파일을 불러오는 중 오류가 발생했습니다."));
-//	}
-//}
-//
-//// 파일(학생 리스트) 저장하기
-//void CStudentManagementDlg::OnClickedButtonSaveFile()
-//{
-//	// 1) 기본적으로 제공하는 파일 라이브러리 사용
-//	// 2) csv 파일로 저장
-//	// 3) 파일 양식
-//	//		- 가장 상단 행은 목록
-//	//		- 정의된 열 순서대로 데이터 배치
-//	// 4) 파일 저장 중 오류 발생시 오류 안내
-//	CFileDialog dlg(FALSE, _T("csv"), _T("학생정보.csv"),
-//		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-//		_T("CSV Files (*.csv)|*.csv|All Files (*.*)|*.*||"),
-//		this);
-//
-//	if (dlg.DoModal() != IDOK)
-//		return;
-//
-//	CString filePath = dlg.GetPathName();
-//	CT2CA utf8Path(filePath, CP_UTF8);
-//	std::string path(utf8Path);
-//
-//	auto studentScoreInfoValues = studentScoreInfoList.getStudentScoreInfoValues(
-//		studentList.getMappingRows(),
-//		studentScoreList.getMappingRows()
-//	);
-//
-//	bool result = studentScoreInfoList.saveStudentScoreInfosToFile(path, studentScoreInfoValues);
-//	if (result)
-//		AfxMessageBox(_T("CSV 파일로 저장되었습니다."));
-//	else
-//		AfxMessageBox(_T("CSV 저장 중 오류가 발생했습니다."));
-//}
+// 파일(학생 리스트) 불러오기
+void CStudentManagementDlg::OnClickedButtonLoadFile()
+{
+	try {
+		// 리스트에 데이터가 있을 경우, 데이터 삭제해도되는지 확인
+		if (m_studentInfoListCtl.GetItemCount() > 0)
+		{
+			int result = AfxMessageBox(_T("파일을 불러오면 기존에 등록된 데이터는 전부 삭제됩니다. \n정말 삭제하시겠습니까?"), MB_YESNO | MB_ICONQUESTION);
+			if (result == IDNO)
+				return;
+		}
+
+		CFileDialog dlg(TRUE, _T("csv"), nullptr,
+			OFN_FILEMUSTEXIST | OFN_HIDEREADONLY,
+			_T("CSV Files (*.csv)|*.csv|All Files (*.*)|*.*||"),
+			this);
+
+		if (dlg.DoModal() != IDOK)
+			return;
+
+		CString filePathCstr = dlg.GetPathName();
+		std::string pathStr = Convert::CStringToStdString(filePathCstr);
+
+		// 파일 불러오기 실행
+		studentScoreInfoController.loadFromFile(pathStr);
+	}
+	catch (const std::exception& e)
+	{
+		CString msg = Convert::StdStringToCString(e.what());
+		AfxMessageBox(msg);
+	}
+
+	AfxMessageBox(_T("파일을 불러왔습니다."));
+	reloadStudentScoreList(); // 리스트 초기화
+}
+
+// 파일(학생 리스트) 저장하기
+void CStudentManagementDlg::OnClickedButtonSaveFile()
+{
+	try {
+		CFileDialog dlg(FALSE, _T("csv"), _T("학생정보.csv"),
+			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+			_T("CSV Files (*.csv)|*.csv|All Files (*.*)|*.*||"),
+			this);
+
+		if (dlg.DoModal() != IDOK)
+			return;
+
+		CString filePathCstr = dlg.GetPathName();
+		std::string pathStr = Convert::CStringToStdString(filePathCstr);
+
+		studentScoreInfoController.saveToFile(pathStr);
+	}
+	catch (const std::exception& e)
+	{
+		CString msg = Convert::StdStringToCString(e.what());
+		AfxMessageBox(msg);
+	}
+
+	AfxMessageBox(_T("파일을 저장했습니다."));
+	
+}

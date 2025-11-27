@@ -33,7 +33,7 @@ StudentScore* StudentScoreService::searchStudentExamScore(int studentKey, int ex
 	std::vector<StudentScore>* studentScores = searchStudentScores(studentKey);
 	if (studentScores == nullptr)
 	{
-		throw std::runtime_error("해당 학생의 성적 정보가 존재하지 않습니다.");
+		return nullptr;
 	}
 
 	for (auto it = studentScores->begin(); it != studentScores->end(); ++it)
@@ -56,17 +56,17 @@ std::vector<StudentScore>* StudentScoreService::searchStudentScores(int studentK
 	return &(it->second);
 }
 
-StudentScore& StudentScoreService::addStudentScore(int studentKey, int examId, StudentScore& score)
+StudentScore& StudentScoreService::addStudentScore(StudentScore& score)
 {
-	StudentScore* searchedScore = searchStudentExamScore(studentKey, examId);
+	StudentScore* searchedScore = searchStudentExamScore(score.getStudentKey(), score.getExamId());
 	if (searchedScore != nullptr)
 	{
 		throw std::runtime_error("이미 해당 학생과 시험에 대한 성적이 존재합니다.");
 	}
-	studentScoreStorage.studentScoreTable[studentKey].push_back(score);
+	studentScoreStorage.studentScoreTable[score.getStudentKey()].push_back(score);
 
 	//가장 마지막 요소를 반환
-	return studentScoreStorage.studentScoreTable[studentKey].back();
+	return studentScoreStorage.studentScoreTable[score.getStudentKey()].back();
 }
 StudentScore& StudentScoreService::updateStudentScore(int studentKey, int originExamId, StudentScore& updateScore) //이미 성적을 생성하고 들어옴
 {
@@ -127,4 +127,9 @@ void StudentScoreService::deleteStudentScore(int studentKey, int examId)
 
 	throw std::runtime_error("해당 시험의 성적이 존재하지 않습니다.");
 
+}
+
+void StudentScoreService::deleteAllScores()
+{
+	studentScoreStorage.studentScoreTable.clear();
 }

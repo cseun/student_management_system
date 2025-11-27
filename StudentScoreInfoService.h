@@ -36,4 +36,6 @@ public:
 	);
 	void deleteStudentScoreInfo(Student& student, ExamInfo& examInfo);
 	void deleteStudentScoreInfo(StudentListKey& listKey, int examId);
+
+	void deleteAllStudentScoreInfos();
 };

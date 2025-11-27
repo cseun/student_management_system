@@ -22,4 +22,5 @@ public:
 	Student& addStudent(Student& student);
 	Student& updateStudent(Student& targetStudent, Student& newStudent);
 	void deleteStudent(StudentListKey& listKey);
+	void deleteAllStudents();
 };

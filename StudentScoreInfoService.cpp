@@ -196,3 +196,11 @@ void StudentScoreInfoService::deleteStudentScoreInfo(StudentListKey& listKey, in
 	// 학생 성적 삭제
 	scoreService.deleteStudentScore(searchedStudent->getKey(), examId);
 }
+
+void StudentScoreInfoService::deleteAllStudentScoreInfos()
+{
+	// 데이터 전체 삭제
+	scoreService.deleteAllScores();
+	examInfoService.deleteAllExams();
+	studentService.deleteAllStudents();
+}
