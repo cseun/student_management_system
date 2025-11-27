@@ -184,6 +184,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Convert.h" />
+    <ClInclude Include="Dump.h" />
     <ClInclude Include="ExamInfo.h" />
     <ClInclude Include="ExamInfoService.h" />
     <ClInclude Include="ExamInfoStorage.h" />
