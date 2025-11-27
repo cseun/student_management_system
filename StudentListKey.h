@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <string>
 struct StudentListKey
 {
 	int grade = 0;
@@ -22,5 +23,19 @@ struct StudentListKey
 
 	bool operator!=(const StudentListKey& other) const {
 		return !(*this == other);
+	}
+
+	std::string toString() const
+	{
+		return std::to_string(grade) + "-" +
+			std::to_string(classNumber) + "-" +
+			std::to_string(studentNumber);
+	}
+
+	static StudentListKey fromString(std::string listKeyStr)
+	{
+		StudentListKey key;
+		sscanf_s(listKeyStr.c_str(), "%d-%d-%d", &key.grade, &key.classNumber, &key.studentNumber);
+		return key;
 	}
 };

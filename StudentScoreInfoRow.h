@@ -11,9 +11,11 @@ struct StudentScoreInfoRow
 	std::string studentNumber;
 	std::string name;
 
+	std::string examId;
 	std::string year;
 	std::string semester;
 	std::string examType;
+	std::string examTypeName;
 
 	std::string kukScore;
 	std::string engScore;
@@ -28,6 +30,10 @@ struct StudentScoreInfoRow
 	{
 		return { "학년", "반", "번호", "이름", "년도", "학기", "시험종류", "국어", "영어", "수학", "사회", "과학", "총점", "등수" };
 	}
+	static std::vector<int> getAttributeSizes()
+	{
+		return { 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1 };
+	}
 	std::vector<std::string> toVector() {
 		return {
 			grade, 
@@ -36,7 +42,7 @@ struct StudentScoreInfoRow
 			name,
 			year,
 			semester,
-			examType,
+			examTypeName,
 			kukScore, 
 			engScore, 
 			mathScore,
@@ -53,5 +59,10 @@ struct StudentScoreInfoRow
 			std::stoi(classNumber),
 			std::stoi(studentNumber)
 		};
+	}
+
+	std::string getExamId()
+	{
+		return examId;
 	}
 };

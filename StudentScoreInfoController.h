@@ -52,8 +52,8 @@ public:
 
 	// CUD 작업
 	StudentScoreInfoRow addStudentScoreInfo(StudentScoreInfoRow& row);
-	StudentScoreInfoRow updateStudentScoreInfo(StudentScoreInfoRow& originRow, StudentScoreInfoRow& updateRow);
-	void deleteStudentScoreInfo(StudentScoreInfoRow& row);
+	StudentScoreInfoRow updateStudentScoreInfo(std::string& listKey, int examId, StudentScoreInfoRow& updateRow);
+	void deleteStudentScoreInfo(std::string& listKey, int examId);
 
 	// 학생 성적 csv 불러오기 버튼
 	// 학생 성적 csv 저장하기 버튼

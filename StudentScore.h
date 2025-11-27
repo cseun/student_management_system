@@ -38,6 +38,7 @@ public:
     void setScoreInfo(StudentScore& score);
     void setScoreInfo(int examId, int kukScore, int engScore, int mathScore, int socialScore, int scienceScore);
     
+    int getStudentKey();
     int getExamId();
     int getTotalScore();
     int getKukScore();

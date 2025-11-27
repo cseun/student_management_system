@@ -6,9 +6,7 @@
 #include "framework.h"
 #include "StudentManagement.h"
 #include "StudentManagementDlg.h"
-#include "afxdialogex.h"
-#include "student.h"
-#include "studentList.h"
+#include "Convert.h"
 #include <atlconv.h>
 #include <map>
 #include <vector>
@@ -51,24 +49,26 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-
 // CStudentManagementDlg 대화 상자
-
-
-
 CStudentManagementDlg::CStudentManagementDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_STUDENTMANAGEMENT_DIALOG, pParent)
+	, scoreInfoService(studentService, examService, scoreService)
+	, studentScoreInfoController(scoreInfoService)
+	, now(CTime::GetCurrentTime())
 	, m_name(_T(""))
 	, m_grade(_T(""))
 	, m_class(_T(""))
-	, m_kukScore(_T(""))
-	, m_mathScore(_T(""))
-	, m_scienceScore(_T(""))
-	, m_socialScore(_T(""))
-	, m_totalScore(_T(""))
 	, m_studentNumber(_T(""))
-	, m_rank(_T(""))
-	, m_engScore(_T(""))
+	, m_kukScore(0)
+	, m_mathScore(0)
+	, m_scienceScore(0)
+	, m_socialScore(0)
+	, m_totalScore(0)
+	, m_rank(0)
+	, m_engScore(0)
+	, m_year(now.GetYear())
+	, m_semester(1)
+	, m_exam_type(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -88,6 +88,16 @@ void CStudentManagementDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_NUMBER, m_studentNumber);
 	DDX_Text(pDX, IDC_EDIT_RANK, m_rank);
 	DDX_Control(pDX, IDC_LIST_STUDENT, m_studentInfoListCtl);
+	DDV_MinMaxInt(pDX, m_kukScore, 0, 100);
+	DDV_MinMaxInt(pDX, m_engScore, 0, 100);
+	DDV_MinMaxInt(pDX, m_mathScore, 0, 100);
+	DDV_MinMaxInt(pDX, m_scienceScore, 0, 100);
+	DDV_MinMaxInt(pDX, m_socialScore, 0, 100);
+	DDX_Text(pDX, IDC_EDIT_YEAR, m_year);
+	DDX_Text(pDX, IDC_EDIT_SEMESTER, m_semester);
+	DDV_MinMaxInt(pDX, m_semester, 1, 3);
+	DDX_CBString(pDX, IDC_COMBO_EXAM_TYPE, m_exam_type);
+	DDX_Control(pDX, IDC_COMBO_EXAM_TYPE, m_exam_type_ctl);
 }
 
 BEGIN_MESSAGE_MAP(CStudentManagementDlg, CDialogEx)
@@ -97,8 +107,8 @@ BEGIN_MESSAGE_MAP(CStudentManagementDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_ADD, &CStudentManagementDlg::OnBnClickedButtonAdd)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &CStudentManagementDlg::OnBnClickedButtonSave)
 	ON_BN_CLICKED(IDC_BUTTON_DELETE, &CStudentManagementDlg::OnBnClickedButtonDelete)
-	ON_BN_CLICKED(IDC_BUTTON_LOAD_FILE, &CStudentManagementDlg::OnClickedButtonLoadFile)
-	ON_BN_CLICKED(IDC_BUTTON_SAVE_FILE, &CStudentManagementDlg::OnClickedButtonSaveFile)
+	//ON_BN_CLICKED(IDC_BUTTON_LOAD_FILE, &CStudentManagementDlg::OnClickedButtonLoadFile)
+	//ON_BN_CLICKED(IDC_BUTTON_SAVE_FILE, &CStudentManagementDlg::OnClickedButtonSaveFile)
 	ON_NOTIFY(NM_CLICK, IDC_LIST_STUDENT, &CStudentManagementDlg::OnClickListStudent)
 END_MESSAGE_MAP()
 
@@ -135,9 +145,9 @@ BOOL CStudentManagementDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-	createStudentInfoList();
-	resetStudentList(); // 학생 리스트 초기화
-
+	createStudentScoreList(); // 리스트 생성
+	reloadStudentScoreList(); // 리스트 초기화
+	loadExamTypeComboBox(); // 시험 항목 선택 박스 초기화
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -190,9 +200,7 @@ HCURSOR CStudentManagementDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
-// ===== 개인 주석 =====
+// ===== 개인 정리 =====
 // [오류 확인에 대해서]
 //	1) 화면단에서 확인할 수 있는 오류는 확인하고 넘겨주기
 //	2) 내부에서도 안전하게 재확인하기
@@ -214,272 +222,437 @@ HCURSOR CStudentManagementDlg::OnQueryDragIcon()
 //	3) 클래스에 내부 동작 코딩하기
 //		- 뷰단에서 가정한 부분을 클래스에서 함수를 불러와 대체
 
-// 학생 추가
-// 1) 컨트롤 학생 정보 읽고 학생 추가.
-// 2) 추가가 되면 컨트롤 리셋
-// 3) 추가가 안되면 추가 안된 이유 안내 (return {true/false, errorContext})
-//		- 학생이 이미 존재하는가?
-//		- 입력 값이 잘못되었는가?
-//		- 학생 추가 중 문제가 발생하였는가?
-// 4) 리스트 리셋
-void CStudentManagementDlg::OnBnClickedButtonAdd()
+// 학생 성적 리스트 뷰 생성 (열)
+void CStudentManagementDlg::createStudentScoreList()
 {
-	student student = getStudentInfo();
-
-	if (studentList.addStudent(student)) {
-		resetStudentInfo();
-		resetStudentList();
-	}
-}
-
-// 학생 정보 저장
-// 1) 컨트롤 학생 정보 읽고 학생 업데이트
-// 2) 업데이트가 되면 컨트롤 리셋
-// 3) 업데이트가 안되면 업데이트 안된 이유 안내 (return {true/false, errorContext})
-//		- 학생이 존재하지 않는가?
-//		- 입력 값이 잘못되었는가?
-//		- 학생 업데이트 중 문제가 발생하였는가?
-// 4) 리스트 리셋
-void CStudentManagementDlg::OnBnClickedButtonSave()
-{
-	student student = getStudentInfo();
-
-	if (studentList.updateStudent(student)) {
-		resetStudentInfo();
-		resetStudentList();
-	}
-}
-
-// 학생 정보 삭제
-// 1) 컨트롤 학생 정보 읽고 학생 삭제
-// 2) 삭제가 되면 컨트롤 리셋
-// 3) 삭제가 안되면 삭제 안된 이유 안내 (return {true/false, errorContext})
-//		- 학생이 존재하지 않는가?
-//		- 학생 삭제 중 문제가 발생하였는가?
-// 4) 리스트 리셋
-void CStudentManagementDlg::OnBnClickedButtonDelete()
-{
-	student student = getStudentInfo();
-	studentList.deleteStudent(student.studentNumber);
-	resetStudentInfo();
-	resetStudentList();
-}
-
-// 학생 정보 컨트롤에서 가져오기
-// 1) 컨트롤 학생 정보 가져오기
-// 2) 입력값 확인하고 이상하면 이유 안내 (DDV추가), 에러 객체 추가, 에러 dialog 출력 함수 추가
-//		- 학년, 성적 등이 숫자값인가?
-//		- 점수가 0에서 100점 사이인가?
-// 3) 학생 객체에 담아서 반환
-// 3) 업데이트가 안되면 업데이트 안된 이유 안내 (return {result, errorStruct<errorCode, errorContext>})
-//		- 학생이 존재하지 않는가?
-//		- 입력 값이 잘못되었는가?
-//		- 학생 업데이트 중 문제가 발생하였는가?
-// 4) 리스트 리셋
-student CStudentManagementDlg::getStudentInfo()
-{
-	UpdateData(TRUE); // 컨트롤 데이터를 멤버 변수에 저장
-
-	std::string studentNumber = (CT2A)m_studentNumber;
-	std::string name = (CT2A)m_name;
-	std::string className = (CT2A)m_class;
-
-	student student(
-		studentNumber,
-		name,
-		_ttoi(m_grade),
-		className,
-		_ttoi(m_kukScore),
-		_ttoi(m_engScore),
-		_ttoi(m_mathScore),
-		_ttoi(m_scienceScore),
-		_ttoi(m_socialScore)
-	);
-
-	return student;
-}
-
-void CStudentManagementDlg::setStudentInfo(StudentList::StudentRow row)
-{
-	m_studentNumber = row.studentNumber;
-	m_name = row.name;
-	m_class = row.className;
-	m_grade = row.grade;
-	m_class = row.className;
-	m_kukScore = row.kukScore;
-	m_engScore = row.engScore;
-	m_mathScore = row.mathScore;
-	m_scienceScore = row.scienceScore;
-	m_socialScore = row.socialScore;
-
-	m_totalScore = row.totalScore;
-	m_rank = row.rank;
-
-	UpdateData(FALSE);
-}
-
-// 에러 정보 출력
-// 1) 에러 객체(errorStruct<errorCode, errorContext>) 받아오기
-// 2) 에러 dialog 출력
-//void CStudentManagementDlg::showErrorDialog(errorStruct error) {};
-
-// 학생 정보 컨트롤 리셋
-// 1) 저장된 학생 정보값 지우기
-// 2) 사용자 노출되는 정보값 지우기
-void CStudentManagementDlg::resetStudentInfo()
-{
-	m_studentNumber = _T("");
-	m_name = _T("");
-	m_grade = _T("0");
-	m_class = _T("");
-	m_kukScore = _T("0");
-	m_engScore = _T("0");
-	m_mathScore = _T("0");
-	m_scienceScore = _T("0");
-	m_socialScore = _T("0");
-
-	UpdateData(FALSE);
-}
-
-// 학생 성적 리스트 만들기
-// 1) 성적 리스트 제작 (열)
-//		- 학생 정보 수 만큼 열 제작
-//		- 열의 길이는 균등 (이후 이름, 번호 등은 2배 처리)
-// 2) DB 사용시 리스트 제작 후 학생 정보 불러와서 표시
-void CStudentManagementDlg::createStudentInfoList()
-{
+	// 성적 리스트 제작 (열)
 	CRect rt; //리스트 컨트롤 크기를 가져올 변수
 	m_studentInfoListCtl.GetWindowRect(&rt);
 	m_studentInfoListCtl.SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT); //리스트 컨트롤 선표시 및 item 선택시 한 행 전체 선택
 
-	std::vector<CString> columns = studentList.getAttributeNames();
-	int colCount = (int)columns.size();
-	int colWidth = rt.Width() / colCount;
+	std::vector<std::string> attributeNames = ::StudentScoreInfoRow::getAttributeNames();
+	std::vector<int> attributeSizes = ::StudentScoreInfoRow::getAttributeSizes();
 
-	for (int i = colCount - 1; i >= 0; --i)
+	int totalSize = 0;
+	for (int size : attributeSizes)
 	{
-		m_studentInfoListCtl.InsertColumn(0, columns[i], LVCFMT_CENTER, colWidth);
+		totalSize += size;
 	}
+	int colWidth = rt.Width() / totalSize;
 
-	//resetStudentList();
+	// 식별을 위해 숨겨진 항목 - 학생 리스트 키
+	m_studentInfoListCtl.InsertColumn(0, L"hiddenKey", LVCFMT_LEFT, 0);
+	// 식별을 위해 숨겨진 항목 - 성적 ID
+	m_studentInfoListCtl.InsertColumn(1, L"hiddenExamId", LVCFMT_LEFT, 0);
+
+	for (int i = 0; i < attributeNames.size(); i++)
+	{
+		CString attributeName = Convert::StdStringToCString(attributeNames[i]);
+		int width = colWidth * attributeSizes[i];
+
+		m_studentInfoListCtl.InsertColumn(i + 2, attributeName, LVCFMT_CENTER, width);
+	}
 }
 
-// 학생 리스트 선택 시 컨트롤에 데이터 표시
-// 1) 선택된 항목에 대한 정보 불러오기
-// 2) 불러온 정보를 컨트롤에 표시
-void CStudentManagementDlg::OnClickListStudent(NMHDR* pNMHDR, LRESULT* pResult)
+// 학생 성적 리스트 뷰 새로고침 (내용)
+void CStudentManagementDlg::reloadStudentScoreList()
 {
-	// 클릭된 위치 정보 가져오기
-	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
-	int selectIdx = pNMItemActivate->iItem; // 클릭된 행 인덱스
-
-	if (selectIdx >= 0) {
-		CString studentNumber = m_studentInfoListCtl.GetItemText(selectIdx, 3);
-		
-		CT2A ascii(studentNumber);                // CString → const char*
-		std::string studentNumStr(ascii);          // const char* → std::string
-
-		// searchStudent()는 student* 반환
-		student* pStudent = studentList.searchStudent(studentNumStr);
-
-		if (pStudent != nullptr) {
-			setStudentInfo(studentList.getAttributeRow(*pStudent));
-		}
-		else {
-			AfxMessageBox(_T("학생 정보를 찾을 수 없습니다."));
-		}
-	}
-
-	*pResult = 0;
-}
-
-// 학생 성적 리스트 새로고침
-// 1) 학생들 등수 재계산
-// 2) 학생들 정렬 (등록 순서대로)
-// 3) 리스트 재표시
-void CStudentManagementDlg::resetStudentList()
-{
+	// 학생 리스트 뷰 비우기
 	if (m_studentInfoListCtl.GetItemCount() > 0)
 	{
 		m_studentInfoListCtl.DeleteAllItems();
 	}
 
-	if (studentInfos.empty()) {
-		return;
-	}
+	// 리스트 데이터 불러오기
+	std::vector<StudentScoreInfoRow> studenScoreRows = studentScoreInfoController.getAllStudentScoreInfoRows();
 
-	auto rows = studentList.getAttributeRows();
-
-	for (int i = 0; i < rows.size(); ++i)
+	// 리스트 재표시
+	if (studenScoreRows.empty()) return;
+	for (int i = 0; i < studenScoreRows.size(); ++i)
 	{
-		auto& row = rows[i];
+		StudentScoreInfoRow& studentScoreRow =  studenScoreRows[i];
+		// 식별 데이터 추출
+		std::string listKeyStr = studentScoreRow.getListKey().toString();
+		std::string examIdStr = studentScoreRow.getExamId();
 
-		// 첫 번째 컬럼에 대한 항목 추가
-		int index = m_studentInfoListCtl.InsertItem(i, row[0]);
+		// row 생성
+		auto row = studentScoreRow.toVector();
+		
+		// 빈 item 추가 (행 추가)
+		int rowIndex = m_studentInfoListCtl.InsertItem(i, L"");
+
+		// 숨겨진 키 - 학생 (0번 컬럼)
+		m_studentInfoListCtl.SetItemText(rowIndex, 0, Convert::StdStringToCString(listKeyStr));
+		// 숨겨진 키 - 시험 (1번 컬럼)
+		m_studentInfoListCtl.SetItemText(rowIndex, 1, Convert::StdStringToCString(examIdStr));
 
 		// 우측으로 나머지 서브 항목 채우기
-		for (int j = 1; j < row.size(); ++j)
+		for (int j = 0; j < row.size(); ++j)
 		{
-			m_studentInfoListCtl.SetItemText(index, j, row[j]);
+			m_studentInfoListCtl.SetItemText(rowIndex, j + 2, Convert::StdStringToCString(row[j]));
 		}
 	}
 }
 
-// 파일(학생 리스트) 불러오기
-// 1) 기본적으로 제공하는 파일 라이브러리 사용
-// 2) csv 파일만 불러오도록 제한
-// 3) 파일 양식은 다운된 파일을 기준으로 한다.
-//		- 가장 상단 행 제외 (목록)
-//		- 정의된 열 순서대로 데이터 배치되어있을 것
-// 4) 파일 불러오는 중 오류 발생시 오류 안내
-void CStudentManagementDlg::OnClickedButtonLoadFile()
+// 시험 콤보 박스 로드
+void CStudentManagementDlg::loadExamTypeComboBox()
 {
-	CFileDialog dlg(TRUE, _T("csv"), nullptr,
-		OFN_FILEMUSTEXIST | OFN_HIDEREADONLY,
-		_T("CSV Files (*.csv)|*.csv|All Files (*.*)|*.*||"),
-		this);
-
-	if (dlg.DoModal() != IDOK)
-		return;
-
-	CString filePath = dlg.GetPathName();
-	CT2CA converted(filePath, CP_UTF8);
-	std::string path(converted);
-
-	if (studentList.loadFromCSV(path))
+	for (ExamType type : getExamTypes())
 	{
-		AfxMessageBox(_T("CSV 파일을 성공적으로 불러왔습니다."));
-		resetStudentList(); // 리스트 초기화
+		std::string examTypeStr = getExamName(type);
+		CString examTypeCStr = Convert::StdStringToCString(examTypeStr);
+		// 콤보박스에 문자열 추가
+		int index = m_exam_type_ctl.AddString(examTypeCStr);
+		// 항목에 enum 값 저장
+		m_exam_type_ctl.SetItemData(index, (DWORD_PTR)type);
 	}
-	else
+
+	m_exam_type_ctl.SetCurSel(0);
+}
+
+/*
+ 학생 정보 컨트롤에서 가져오기
+ 1) 뷰에서 학생과 성적 정보를 가져온다.
+ 2) 입력값을 확인한다.
+	- DDV로 뷰 데이터 제한
+	- 내부에서 데이터 재확인
+		- 성적이 숫자로 변환하는데 문제가 생기면 오류 반환
+		- 점수가 0에서 100점 사이가 아니면 오류 반환
+ 3) 학생 객체에 담아서 반환
+ 4) 업데이트가 안되면 업데이트 안된 이유 안내 (return {result, errorStruct<errorCode, errorContext>})
+		- 학생이 존재하지 않는가?
+		- 입력 값이 잘못되었는가?
+		- 학생 업데이트 중 문제가 발생하였는가?
+ 5) 리스트 리셋
+ 6) 에러 객체 추가, 에러 dialog 출력 함수 추가
+ 7) TODO 이후에 학생 성적 정보가 여러개가 될 수 있으니, 학생으로 조회하고 여러개면 성적정보로 조회해야되나
+ */
+
+ // 뷰 학생 정보 -> DTO 객체
+StudentScoreInfoRow CStudentManagementDlg::getRowData()
+{
+	UpdateData(TRUE); // 컨트롤 데이터를 멤버 변수에 저장
+	if (m_name == "" || m_grade == "" || m_class == "" || m_studentNumber == "")
 	{
-		AfxMessageBox(_T("CSV 파일을 불러오는 중 오류가 발생했습니다."));
+		throw std::runtime_error("학생 이름, 학년, 반, 번호 값 입력은 필수입니다.");
+	}
+	StudentScoreInfoRow row;
+	row.name = Convert::CStringToStdString(m_name);
+	row.grade = Convert::CStringToStdString(m_grade);
+	row.classNumber = Convert::CStringToStdString(m_class);
+	row.studentNumber = Convert::CStringToStdString(m_studentNumber);
+
+	row.year = std::to_string(m_year);
+	row.semester = std::to_string(m_semester);
+
+	//CString examTypeText;
+	int examIndex = m_exam_type_ctl.GetCurSel();
+	if (examIndex == CB_ERR)
+	{
+		throw std::runtime_error("시험 종류를 선택은 필수입니다.");
+	}
+	//m_exam_type_ctl.GetLBText(examIndex, examTypeText);
+	//row.examType = Convert::CStringToStdString(examTypeText);
+	row.examType = std::to_string((int)m_exam_type_ctl.GetItemData(examIndex));
+
+	row.kukScore = std::to_string(m_kukScore);
+	row.engScore = std::to_string(m_engScore);
+	row.mathScore = std::to_string(m_mathScore);
+	row.socialScore = std::to_string(m_socialScore);
+	row.scienceScore = std::to_string(m_scienceScore);
+
+	return row;
+}
+
+// DTO 객체 -> 뷰 학생 정보 표시
+void CStudentManagementDlg::setStudentData(StudentScoreInfoRow& row)
+{
+	try {
+		m_name = Convert::StdStringToCString(row.name);
+		m_class = Convert::StdStringToCString(row.classNumber);
+		m_grade = Convert::StdStringToCString(row.grade);
+		m_studentNumber = Convert::StdStringToCString(row.studentNumber);
+		m_year = stoi(row.year);
+		m_semester = stoi(row.semester);
+
+		ExamType examType = (ExamType)(std::stoi(row.examType));
+		selectExamType(examType);
+
+		m_kukScore = stoi(row.kukScore);
+		m_engScore = stoi(row.engScore);
+		m_mathScore = stoi(row.mathScore);
+		m_scienceScore = stoi(row.scienceScore);
+		m_socialScore = stoi(row.socialScore);
+		m_totalScore = stoi(row.totalScore);
+		m_rank = stoi(row.rank);
+
+		UpdateData(FALSE);
+	} 
+	catch (const std::exception e)
+	{
+		std::string msg = "[학생 정보를 표시 중 오류 발생] \n";
+		AfxMessageBox(Convert::StdStringToCString(msg + e.what()));
 	}
 }
 
-// 파일(학생 리스트) 저장하기
-// 1) 기본적으로 제공하는 파일 라이브러리 사용
-// 2) csv 파일로 저장
-// 3) 파일 양식
-//		- 가장 상단 행은 목록
-//		- 정의된 열 순서대로 데이터 배치
-// 4) 파일 저장 중 오류 발생시 오류 안내
-void CStudentManagementDlg::OnClickedButtonSaveFile()
+// 해당하는 시험을 콤보박스에서 선택
+void CStudentManagementDlg::selectExamType(ExamType examType)
 {
-	CFileDialog dlg(FALSE, _T("csv"), _T("학생정보.csv"),
-		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		_T("CSV Files (*.csv)|*.csv|All Files (*.*)|*.*||"),
-		this);
+	int count = m_exam_type_ctl.GetCount();
+	for (int i = 0; i < count; i++)
+	{
+		ExamType ctlExamType = (ExamType)m_exam_type_ctl.GetItemData(i);
 
-	if (dlg.DoModal() != IDOK)
-		return;
-
-	CString filePath = dlg.GetPathName();
-	CT2CA utf8Path(filePath, CP_UTF8);
-	std::string path(utf8Path);
-
-	if (studentList.saveToCSV(path))
-		AfxMessageBox(_T("CSV 파일로 저장되었습니다."));
-	else
-		AfxMessageBox(_T("CSV 저장 중 오류가 발생했습니다."));
+		if (examType == ctlExamType)
+		{
+			m_exam_type_ctl.SetCurSel(i);
+			return;
+		}
+	}
 }
+
+// 입력란 리셋
+void CStudentManagementDlg::resetStudentEditCtl()
+{
+	m_name = _T("");
+	m_grade = _T("");
+	m_class = _T("");
+	m_studentNumber = _T("");
+
+	m_year = now.GetYear();
+	m_semester = 1;
+	m_exam_type = _T("");
+
+	m_kukScore = 0;
+	m_mathScore = 0;
+	m_scienceScore = 0;
+	m_socialScore = 0;
+	m_totalScore = 0;
+	m_rank = 0;
+	m_engScore = 0;
+
+	UpdateData(FALSE);
+}
+
+/*
+1) 뷰에서 학생 정보 읽어온다. getStudentInfo
+2) 뷰에서 학생 성적 정보를 읽어온다. getStudentScoreInfo
+3) 학생을 추가한다.
+	- studentRow -> studet 변환
+	- studentList 에 student 추가
+4) 학생 성적을 추가한다.
+	- scoreRow -> score 변환
+	- socreList 에 score 추가
+3) 학생이 추가되면 학생 리스트와 학생 성적 리스트를 업데이트한다.
+	- 
+	- 
+4) 학생 리스트 뷰를 업데이트한다.
+5) 추가가 안되면 추가 안된 이유 안내(return { true / false, errorContext })
+	- 학생이 이미 존재하는가 ?
+	-입력 값이 잘못되었는가 ?
+	-학생 추가 중 문제가 발생하였는가 ?
+*/
+
+// 학생 추가 버튼 클릭
+void CStudentManagementDlg::OnBnClickedButtonAdd()
+{
+	try {
+		// 뷰에서 학생, 성적 정보를 가져옴
+		StudentScoreInfoRow originRow = getRowData();
+
+		// 학생 성적 정보 생성
+		StudentScoreInfoRow newRow = studentScoreInfoController.addStudentScoreInfo(originRow);
+	}
+	catch (const std::exception& e)
+	{
+		CString msg = Convert::StdStringToCString(e.what());
+		AfxMessageBox(msg);
+		return;
+	}
+
+	reloadStudentScoreList();
+
+	// 새로 추가된 항목 = 마지막 행 선택
+	int lastIndex = m_studentInfoListCtl.GetItemCount() - 1;
+	if (lastIndex >= 0)
+	{
+		m_studentInfoListCtl.SetItemState(lastIndex, LVIS_SELECTED, LVIS_SELECTED);
+		m_studentInfoListCtl.EnsureVisible(lastIndex, FALSE);
+	}
+}
+
+// 학생 수정 버튼 클릭
+void CStudentManagementDlg::OnBnClickedButtonSave()
+{
+	try {
+		std::string studentListKey;
+		int examId;
+		getSelectedHiddenValues(studentListKey, examId);
+
+		// 뷰에서 업데이트할 학생, 성적 정보를 가져옴
+		StudentScoreInfoRow updateRow = getRowData();
+
+		// 학생 성적 정보 생성
+		StudentScoreInfoRow newRow = studentScoreInfoController.updateStudentScoreInfo(studentListKey, examId, updateRow);
+		CString successMsg = _T("학생 성적 정보가 업데이트 되었습니다.");
+		AfxMessageBox(successMsg);
+	}
+	catch (const std::exception& e)
+	{
+		TRACE(e.what());
+		CString msg = Convert::StdStringToCString(e.what());
+		AfxMessageBox(msg);
+	}
+
+	reloadStudentScoreList();
+}
+
+// 선택된 학생의 숨겨진 값 가져오기
+void CStudentManagementDlg::getSelectedHiddenValues(std::string& listKeyStr, int& examId)
+{
+	// 현재 선택된 row index 가져오기
+	int selected = m_studentInfoListCtl.GetNextItem(-1, LVNI_SELECTED);
+	if (selected == -1)
+	{
+		throw std::runtime_error("선택된 항목이 없습니다.");
+	}
+	// 학생 리스트 키
+	CString listKeyCStr = m_studentInfoListCtl.GetItemText(selected, 0);
+	listKeyStr = Convert::CStringToStdString(listKeyCStr);
+
+	// 시험 ID
+	CString examIdCStr = m_studentInfoListCtl.GetItemText(selected, 1);
+	examId = std::stoi(Convert::CStringToStdString(examIdCStr));
+}
+
+// 학생 성적 정보 삭제
+void CStudentManagementDlg::OnBnClickedButtonDelete()
+{
+	try {
+		// 현재 선택된 row index 가져오기
+		int selected = m_studentInfoListCtl.GetNextItem(-1, LVNI_SELECTED);
+		if (selected == -1)
+		{
+			throw std::runtime_error("선택된 항목이 없습니다.");
+		}
+		// 학생 리스트 키
+		CString listKeyCStr = m_studentInfoListCtl.GetItemText(selected, 0);
+		std::string listKeyStr = Convert::CStringToStdString(listKeyCStr);
+
+		CString examIdCStr = m_studentInfoListCtl.GetItemText(selected, 1);
+		int examId = std::stoi(Convert::CStringToStdString(examIdCStr));
+
+		// 학생 성적 정보 삭제
+		studentScoreInfoController.deleteStudentScoreInfo(listKeyStr, examId);
+	}
+	catch (const std::exception& e)
+	{
+		TRACE(e.what());
+		CString msg = Convert::StdStringToCString(e.what());
+		AfxMessageBox(msg);
+		return;
+	}
+
+	reloadStudentScoreList();
+	
+}
+
+// 학생 리스트 선택 시 컨트롤에 데이터 표시
+void CStudentManagementDlg::OnClickListStudent(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	try {
+		// 클릭된 위치 정보 가져오기
+		LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+		int selectIdx = pNMItemActivate->iItem; // 클릭된 행 인덱스
+
+		if (selectIdx >= 0) {
+			CString listKeyCstr = m_studentInfoListCtl.GetItemText(selectIdx, 0); // 행에 저장한 listKey값 가져오기
+			CString examIdCstr = m_studentInfoListCtl.GetItemText(selectIdx, 1); // 행에 저장한 examId값 가져오기
+			std::string listKeyStr = Convert::CStringToStdString(listKeyCstr);
+			int examId = stoi(Convert::CStringToStdString(examIdCstr));
+
+			StudentScoreInfo* info = studentScoreInfoController.searchStudentScoreInfoInCache(StudentListKey::fromString(listKeyStr), examId);
+
+			// 뷰 입력란에 표시
+			if (info != nullptr) {
+				StudentScoreInfoRow row = studentScoreInfoController.studentScoreInfoToRow(*info);
+				setStudentData(row);
+			} else {
+				AfxMessageBox(_T("학생 성적 정보를 찾을 수 없습니다."));
+			}
+		}
+	}
+	catch (const std::exception e)
+	{
+		CString msg = Convert::StdStringToCString(e.what());
+		AfxMessageBox(msg);
+	}
+
+	*pResult = 0;
+}
+
+//// 파일(학생 리스트) 불러오기
+//void CStudentManagementDlg::OnClickedButtonLoadFile()
+//{
+//	// 1) 기본적으로 제공하는 파일 라이브러리 사용
+//	// 2) csv 파일만 불러오도록 제한
+//	// 3) 파일 양식은 다운된 파일을 기준으로 한다.
+//	//		- 가장 상단 행 제외 (목록)
+//	//		- 정의된 열 순서대로 데이터 배치되어있을 것
+//	// 4) 파일 불러오는 중 오류 발생시 오류 안내
+//	CFileDialog dlg(TRUE, _T("csv"), nullptr,
+//		OFN_FILEMUSTEXIST | OFN_HIDEREADONLY,
+//		_T("CSV Files (*.csv)|*.csv|All Files (*.*)|*.*||"),
+//		this);
+//
+//	if (dlg.DoModal() != IDOK)
+//		return;
+//
+//	CString filePath = dlg.GetPathName();
+//	CT2CA converted(filePath, CP_UTF8);
+//	std::string path(converted);
+//
+//	std::vector<StudentScoreInfoList::StudentScoreInfoRow> studentScoreInfoRows = studentScoreInfoList.loadStudentScoreInfosFromFile(path);
+//	if (studentScoreInfoRows.size() > 0)
+//	{
+//		AfxMessageBox(_T("CSV 파일을 성공적으로 불러왔습니다."));
+//		reloadStudentScoreList(); // 리스트 초기화
+//	}
+//	else
+//	{
+//		AfxMessageBox(_T("CSV 파일을 불러오는 중 오류가 발생했습니다."));
+//	}
+//}
+//
+//// 파일(학생 리스트) 저장하기
+//void CStudentManagementDlg::OnClickedButtonSaveFile()
+//{
+//	// 1) 기본적으로 제공하는 파일 라이브러리 사용
+//	// 2) csv 파일로 저장
+//	// 3) 파일 양식
+//	//		- 가장 상단 행은 목록
+//	//		- 정의된 열 순서대로 데이터 배치
+//	// 4) 파일 저장 중 오류 발생시 오류 안내
+//	CFileDialog dlg(FALSE, _T("csv"), _T("학생정보.csv"),
+//		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+//		_T("CSV Files (*.csv)|*.csv|All Files (*.*)|*.*||"),
+//		this);
+//
+//	if (dlg.DoModal() != IDOK)
+//		return;
+//
+//	CString filePath = dlg.GetPathName();
+//	CT2CA utf8Path(filePath, CP_UTF8);
+//	std::string path(utf8Path);
+//
+//	auto studentScoreInfoValues = studentScoreInfoList.getStudentScoreInfoValues(
+//		studentList.getMappingRows(),
+//		studentScoreList.getMappingRows()
+//	);
+//
+//	bool result = studentScoreInfoList.saveStudentScoreInfosToFile(path, studentScoreInfoValues);
+//	if (result)
+//		AfxMessageBox(_T("CSV 파일로 저장되었습니다."));
+//	else
+//		AfxMessageBox(_T("CSV 저장 중 오류가 발생했습니다."));
+//}

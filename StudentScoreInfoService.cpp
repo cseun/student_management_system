@@ -131,8 +131,10 @@ StudentScoreInfo StudentScoreInfoService::addStudentScoreInfo(StudentScoreInfo& 
 		student = *searchedStudent;
 	}
 
+	score.setExamId(examInfo.getId());
+	score.setStudentKey(student.getKey());
 	// 성적 정보 추가
-	score = scoreService.addStudentScore(student.getKey(), examInfo.getId(), score);
+	score = scoreService.addStudentScore(score);
 
 	return StudentScoreInfo(student, score, examInfo);
 }
@@ -160,8 +162,11 @@ StudentScoreInfo StudentScoreInfoService::updateStudentScoreInfo(
 	Student updatedStudent = studentService.updateStudent(*targetStudent, updateInfo.getStudent());
 	// 시험 정보 업데이트
 	ExamInfo updatedExam = examInfoService.updateExamInfo(targetExam->getId(), updateInfo.getExam());
+
+	updateInfo.getScore().setStudentKey(updatedStudent.getKey());
+	updateInfo.getScore().setExamId(updatedExam.getId());
 	// 성적 정보 업데이트
-	StudentScore updatedScore = scoreService.updateStudentScore(targetStudent->getKey(), updatedExam.getId(), updateInfo.getScore());
+	StudentScore updatedScore = scoreService.updateStudentScore(targetStudent->getKey(), targetExam->getId(), updateInfo.getScore());
 
 	return StudentScoreInfo(updatedStudent, updatedScore, updatedExam);
 }
@@ -177,6 +182,17 @@ void StudentScoreInfoService::deleteStudentScoreInfo(Student& student, ExamInfo&
 		throw std::runtime_error("존재하지 않는 시험 정보입니다.");
 	// 학생 성적 삭제
 	scoreService.deleteStudentScore(searchedStudent->getKey(), examInfo.getId());
+}
 
-	// TODO 학생에 대한 남은 성적 정보가 없으면 학생 삭제?
+void StudentScoreInfoService::deleteStudentScoreInfo(StudentListKey& listKey, int examId)
+{
+	// 학생 조회
+	Student* searchedStudent = studentService.searchStudent(listKey);
+	if (searchedStudent == nullptr)
+		throw std::runtime_error("존재하지 않는 학생입니다.");
+	ExamInfo* searchedExamInfo = examInfoService.searchExamInfoById(examId);
+	if (searchedExamInfo == nullptr)
+		throw std::runtime_error("존재하지 않는 시험 정보입니다.");
+	// 학생 성적 삭제
+	scoreService.deleteStudentScore(searchedStudent->getKey(), examId);
 }

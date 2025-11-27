@@ -60,6 +60,7 @@ ExamInfo& ExamInfoService::updateExamInfo(int originExamId, ExamInfo& updateExam
 }
 ExamInfo& ExamInfoService::addExamInfo(ExamInfo& examInfo)
 {
+    examInfo.setId();
     examInfoStorage.examInfoTable[examInfo.getId()] = examInfo;
     return examInfoStorage.examInfoTable[examInfo.getId()];
 }

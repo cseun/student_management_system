@@ -79,8 +79,12 @@ void StudentScore::setScoreInfo(
     updateTotalScore();
 }
 
+int StudentScore::getStudentKey() { return studentKey; }
 int StudentScore::getExamId() { return examId; }
-int StudentScore::getTotalScore() { return totalScore; }
+int StudentScore::getTotalScore() { 
+    updateTotalScore();
+    return totalScore; 
+}
 int StudentScore::getKukScore() { return kukScore; }
 int StudentScore::getEngScore() { return engScore; }
 int StudentScore::getMathScore() { return mathScore; }

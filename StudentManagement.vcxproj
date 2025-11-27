@@ -183,21 +183,36 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ExcelManager.h" />
+    <ClInclude Include="Convert.h" />
+    <ClInclude Include="ExamInfo.h" />
+    <ClInclude Include="ExamInfoService.h" />
+    <ClInclude Include="ExamInfoStorage.h" />
+    <ClInclude Include="ExamType.h" />
+    <ClInclude Include="FileManager.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Student.h" />
-    <ClInclude Include="StudentExcelManager.h" />
-    <ClInclude Include="StudentList.h" />
+    <ClInclude Include="StudentController.h" />
+    <ClInclude Include="StudentListKey.h" />
+    <ClInclude Include="StudentScoreController.h" />
+    <ClInclude Include="StudentScoreInfo.h" />
+    <ClInclude Include="StudentScoreInfoController.h" />
+    <ClInclude Include="StudentScoreInfoList.h" />
+    <ClInclude Include="StudentScoreInfoService.h" />
+    <ClInclude Include="StudentScoreInfoRow.h" />
+    <ClInclude Include="StudentScoreService.h" />
+    <ClInclude Include="StudentScoreStorage.h" />
+    <ClInclude Include="StudentService.h" />
+    <ClInclude Include="StudentStorage.h" />
     <ClInclude Include="StudentScore.h" />
-    <ClInclude Include="StudentScoreList.h" />
     <ClInclude Include="StudentManagement.h" />
     <ClInclude Include="StudentManagementDlg.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ExcelManager.cpp" />
+    <ClCompile Include="ExamInfo.cpp" />
+    <ClCompile Include="ExamInfoService.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -205,12 +220,19 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Student.cpp" />
-    <ClCompile Include="StudentExcelManager.cpp" />
-    <ClCompile Include="StudentList.cpp" />
+    <ClCompile Include="StudentController.cpp" />
+    <ClCompile Include="StudentScoreInfo.cpp" />
+    <ClCompile Include="StudentScoreInfoController.cpp" />
+    <ClCompile Include="StudentScoreInfoList.cpp" />
     <ClCompile Include="StudentScore.cpp" />
-    <ClCompile Include="StudentScoreList.cpp" />
+    <ClCompile Include="StudentScoreController.cpp" />
     <ClCompile Include="StudentManagement.cpp" />
     <ClCompile Include="StudentManagementDlg.cpp" />
+    <ClCompile Include="StudentScoreInfoService.cpp" />
+    <ClCompile Include="StudentScoreService.cpp" />
+    <ClCompile Include="StudentScoreStorage.cpp" />
+    <ClCompile Include="StudentService.cpp" />
+    <ClCompile Include="StudentStorage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="StudentManagement.rc" />

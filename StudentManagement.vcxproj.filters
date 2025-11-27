@@ -13,6 +13,30 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="헤더 파일\Service">
+      <UniqueIdentifier>{6199ede5-ad1a-402a-87c8-6845f3ae6dba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Controller">
+      <UniqueIdentifier>{6a8d37bb-33a2-40b8-9bc2-caa151638761}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Controller">
+      <UniqueIdentifier>{b56a902f-a68b-4ba7-ad89-dd9003322be9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Service">
+      <UniqueIdentifier>{dea3ad23-e638-4e8f-8126-d4ed2d7abd3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Model">
+      <UniqueIdentifier>{c4a6072d-555c-478b-bba9-e2121a15a5a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Storage">
+      <UniqueIdentifier>{fbfcc423-66d5-4340-b857-20cdeed6a06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Model">
+      <UniqueIdentifier>{9560eee0-c4bf-4970-b8bb-0e6ccc487255}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Storage">
+      <UniqueIdentifier>{d47ea9c1-d5c9-4f07-9745-85c21bb4a5c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StudentManagement.h">
@@ -33,23 +57,65 @@
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Student.h">
+    <ClInclude Include="FileManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="StudentScoreList.h">
+    <ClInclude Include="StudentScoreInfoList.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Convert.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="StudentService.h">
+      <Filter>헤더 파일\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="StudentController.h">
+      <Filter>헤더 파일\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Student.h">
+      <Filter>헤더 파일\Model</Filter>
     </ClInclude>
     <ClInclude Include="StudentScore.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\Model</Filter>
     </ClInclude>
-    <ClInclude Include="StudentList.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="StudentStorage.h">
+      <Filter>헤더 파일\Storage</Filter>
     </ClInclude>
-    <ClInclude Include="ExcelManager.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="ExamType.h">
+      <Filter>헤더 파일\Model</Filter>
     </ClInclude>
-    <ClInclude Include="StudentExcelManager.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="StudentScoreController.h">
+      <Filter>헤더 파일\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="StudentScoreStorage.h">
+      <Filter>헤더 파일\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="ExamInfoStorage.h">
+      <Filter>헤더 파일\Storage</Filter>
+    </ClInclude>
+    <ClInclude Include="ExamInfo.h">
+      <Filter>헤더 파일\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ExamInfoService.h">
+      <Filter>헤더 파일\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="StudentScoreService.h">
+      <Filter>헤더 파일\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="StudentScoreInfo.h">
+      <Filter>헤더 파일\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="StudentScoreInfoService.h">
+      <Filter>헤더 파일\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="StudentScoreInfoRow.h">
+      <Filter>헤더 파일\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="StudentScoreInfoController.h">
+      <Filter>헤더 파일\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="StudentListKey.h">
+      <Filter>헤더 파일\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -62,23 +128,47 @@
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="StudentScoreList.cpp">
+    <ClCompile Include="StudentScoreInfoList.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="StudentController.cpp">
+      <Filter>소스 파일\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Student.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Model</Filter>
     </ClCompile>
     <ClCompile Include="StudentScore.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Model</Filter>
     </ClCompile>
-    <ClCompile Include="StudentList.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="ExamInfo.cpp">
+      <Filter>소스 파일\Model</Filter>
     </ClCompile>
-    <ClCompile Include="ExcelManager.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="ExamInfoService.cpp">
+      <Filter>소스 파일\Service</Filter>
     </ClCompile>
-    <ClCompile Include="StudentExcelManager.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="StudentService.cpp">
+      <Filter>소스 파일\Service</Filter>
+    </ClCompile>
+    <ClCompile Include="StudentScoreService.cpp">
+      <Filter>소스 파일\Service</Filter>
+    </ClCompile>
+    <ClCompile Include="StudentScoreInfo.cpp">
+      <Filter>소스 파일\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="StudentScoreStorage.cpp">
+      <Filter>소스 파일\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="StudentStorage.cpp">
+      <Filter>소스 파일\Storage</Filter>
+    </ClCompile>
+    <ClCompile Include="StudentScoreController.cpp">
+      <Filter>소스 파일\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="StudentScoreInfoController.cpp">
+      <Filter>소스 파일\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="StudentScoreInfoService.cpp">
+      <Filter>소스 파일\Service</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
