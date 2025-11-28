@@ -334,18 +334,18 @@ void CStudentManagementDlg::reloadStudentScoreList()
 	{
 		StudentScoreInfoRow& studentScoreRow =  studenScoreRows[i];
 
-		// 필터링 적용
-		if (!searchName.empty() && studentScoreRow.name != searchName) continue;
-		if (!searchGrade.empty() && studentScoreRow.grade != searchGrade) continue;
-		if (!searchClassNum.empty() && studentScoreRow.classNumber != searchClassNum) continue;
-		if (!searchStudentNum.empty() && studentScoreRow.studentNumber != searchStudentNum) continue;
-		
 		// 검색박스에 표시할 유니크 값 수집
 		searchNames.insert(studentScoreRow.name);
 		searchGrades.insert(studentScoreRow.grade);
 		searchClasses.insert(studentScoreRow.classNumber);
 		searchStudentNums.insert(studentScoreRow.studentNumber);
 
+		// 필터링 적용
+		if (!searchName.empty() && studentScoreRow.name != searchName) continue;
+		if (!searchGrade.empty() && studentScoreRow.grade != searchGrade) continue;
+		if (!searchClassNum.empty() && studentScoreRow.classNumber != searchClassNum) continue;
+		if (!searchStudentNum.empty() && studentScoreRow.studentNumber != searchStudentNum) continue;
+		
 		// row 생성
 		auto row = studentScoreRow.toVector();
 
