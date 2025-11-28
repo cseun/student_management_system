@@ -3,6 +3,7 @@
 #pragma once
 #include "Convert.h"
 #include "studentScoreInfoController.h"
+#include <set>
 
 
 // CStudentManagementDlg 대화 상자
@@ -65,7 +66,14 @@ public:
 	void setStudentData(StudentScoreInfoRow& row); // DTO 객체 -> 뷰 학생 정보 표시
 	void createStudentScoreList(); // 학생 성적 리스트 생성
 	void reloadStudentScoreList(); // 학생 성적 리스트 새로고침
+	void loadSearchComboBox(
+		std::set<std::string>& name, 
+		std::set<std::string>& grade, 
+		std::set<std::string>& studentClass, 
+		std::set<std::string>& studentNum
+	);
 	void loadExamTypeComboBox(); // 시험 선택 박스 로드
+	void reselectSearchComboBox(CComboBox& combo, const CString& prevValue); // 선택 박스 기존값 선택
 	void selectExamType(ExamType examType);
 	void getSelectedHiddenValues(std::string& listKeyStr, int& examId); // 리스트에서 선택된 항목의 숨겨진 키값 가져오기
 
@@ -85,4 +93,11 @@ public:
 	
 	CButton m_button_save;
 	CButton m_button_delete;
+
+	CComboBox m_search_name_ctl;
+	CComboBox m_search_grade_ctl;
+	CComboBox m_search_class_ctl;
+	CComboBox m_search_number_ctl;
+	afx_msg void OnBnClickedButtonSearch();
+	afx_msg void OnBnClickedButtonAll();
 };

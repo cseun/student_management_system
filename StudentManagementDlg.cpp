@@ -13,6 +13,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <set>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -100,6 +101,10 @@ void CStudentManagementDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_EXAM_TYPE, m_exam_type_ctl);
 	DDX_Control(pDX, IDC_BUTTON_SAVE, m_button_save);
 	DDX_Control(pDX, IDC_BUTTON_DELETE, m_button_delete);
+	DDX_Control(pDX, IDC_COMBO_NAME, m_search_name_ctl);
+	DDX_Control(pDX, IDC_GRADE, m_search_grade_ctl);
+	DDX_Control(pDX, IDC_CLASS, m_search_class_ctl);
+	DDX_Control(pDX, IDC_STUDENT_NUM, m_search_number_ctl);
 }
 
 BEGIN_MESSAGE_MAP(CStudentManagementDlg, CDialogEx)
@@ -112,6 +117,8 @@ BEGIN_MESSAGE_MAP(CStudentManagementDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_LOAD_FILE, &CStudentManagementDlg::OnClickedButtonLoadFile)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE_FILE, &CStudentManagementDlg::OnClickedButtonSaveFile)
 	ON_NOTIFY(NM_CLICK, IDC_LIST_STUDENT, &CStudentManagementDlg::OnClickListStudent)
+	ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CStudentManagementDlg::OnBnClickedButtonSearch)
+	ON_BN_CLICKED(IDC_BUTTON_ALL, &CStudentManagementDlg::OnBnClickedButtonAll)
 END_MESSAGE_MAP()
 
 
@@ -264,33 +271,92 @@ void CStudentManagementDlg::createStudentScoreList()
 // 학생 성적 리스트 뷰 새로고침 (내용)
 void CStudentManagementDlg::reloadStudentScoreList()
 {
-	// 학생 리스트 뷰 비우기
-	if (m_studentInfoListCtl.GetItemCount() > 0)
-	{
-		m_studentInfoListCtl.DeleteAllItems();
+	UpdateData(TRUE);
+
+	// 검색박스에서 선택된 값을 가져와 필터링
+	int idx;
+	CString searchNameCstr, searchGradeCstr, searchClassNumCstr, searchStudentNumCstr;
+	std::string searchName, searchGrade, searchClassNum, searchStudentNum;
+	
+	// 이름
+	idx = m_search_name_ctl.GetCurSel();
+	if (idx != CB_ERR) {
+		m_search_name_ctl.GetLBText(idx, searchNameCstr);
+		if (searchNameCstr != _T("(전체)"))
+		{
+			searchName = Convert::CStringToStdString(searchNameCstr);
+		}
+	}
+	// 학년
+	idx = m_search_grade_ctl.GetCurSel();
+	if (idx != CB_ERR) {
+		m_search_grade_ctl.GetLBText(idx, searchGradeCstr);
+		if (searchGradeCstr != _T("(전체)"))
+		{
+			searchGrade = Convert::CStringToStdString(searchGradeCstr);
+		}
+	}
+	// 반
+	idx = m_search_class_ctl.GetCurSel();
+	if (idx != CB_ERR) {
+		m_search_class_ctl.GetLBText(idx, searchClassNumCstr);
+		if (searchClassNumCstr != _T("(전체)"))
+		{
+			searchClassNum = Convert::CStringToStdString(searchClassNumCstr);
+		}
+	}
+	// 번호
+	idx = m_search_number_ctl.GetCurSel();
+	if (idx != CB_ERR) {
+		m_search_number_ctl.GetLBText(idx, searchStudentNumCstr);
+		if (searchStudentNumCstr != _T("(전체)"))
+		{
+			searchStudentNum = Convert::CStringToStdString(searchStudentNumCstr);
+		}
 	}
 
-	// 리스트 데이터 불러오기
-	std::vector<StudentScoreInfoRow> studenScoreRows = studentScoreInfoController.getAllStudentScoreInfoRows();
+	// 학생 리스트 뷰 비우기
+	m_studentInfoListCtl.DeleteAllItems();
 
-	// 리스트 재표시
-	if (studenScoreRows.empty()) return;
+	// 리스트 데이터 불러오기
+	std::vector<StudentScoreInfoRow>& studenScoreRows = studentScoreInfoController.getAllStudentScoreInfoRows();
+	
+	// 유니크 검색 값 수집용 set (중복제거, 자동정렬)
+	std::set<std::string> searchNames;
+	std::set<std::string> searchGrades;
+	std::set<std::string> searchClasses;
+	std::set<std::string> searchStudentNums;
+
+	//if (studenScoreRows.empty()) return;
+
+	// 리스트 표시
 	for (int i = 0; i < studenScoreRows.size(); ++i)
 	{
 		StudentScoreInfoRow& studentScoreRow =  studenScoreRows[i];
-		// 식별 데이터 추출
-		std::string listKeyStr = studentScoreRow.getListKey().toString();
-		std::string examIdStr = studentScoreRow.getExamId();
+
+		// 필터링 적용
+		if (!searchName.empty() && studentScoreRow.name != searchName) continue;
+		if (!searchGrade.empty() && studentScoreRow.grade != searchGrade) continue;
+		if (!searchClassNum.empty() && studentScoreRow.classNumber != searchClassNum) continue;
+		if (!searchStudentNum.empty() && studentScoreRow.studentNumber != searchStudentNum) continue;
+		
+		// 검색박스에 표시할 유니크 값 수집
+		searchNames.insert(studentScoreRow.name);
+		searchGrades.insert(studentScoreRow.grade);
+		searchClasses.insert(studentScoreRow.classNumber);
+		searchStudentNums.insert(studentScoreRow.studentNumber);
 
 		// row 생성
 		auto row = studentScoreRow.toVector();
-		
+
 		// 빈 item 추가 (행 추가)
 		int rowIndex = m_studentInfoListCtl.InsertItem(i, L"");
 
-		// 숨겨진 키 - 학생 (0번 컬럼)
+		// 식별 데이터 추출
+		std::string listKeyStr = studentScoreRow.getListKey().toString();
+		std::string examIdStr = studentScoreRow.getExamId();
+		// 숨겨진 키 세팅
 		m_studentInfoListCtl.SetItemText(rowIndex, 0, Convert::StdStringToCString(listKeyStr));
-		// 숨겨진 키 - 시험 (1번 컬럼)
 		m_studentInfoListCtl.SetItemText(rowIndex, 1, Convert::StdStringToCString(examIdStr));
 
 		// 우측으로 나머지 서브 항목 채우기
@@ -299,7 +365,85 @@ void CStudentManagementDlg::reloadStudentScoreList()
 			m_studentInfoListCtl.SetItemText(rowIndex, j + 2, Convert::StdStringToCString(row[j]));
 		}
 	}
+
+	// 검색 콤보 박스 업데이트
+	loadSearchComboBox(searchNames, searchGrades, searchClasses, searchStudentNums);
+	// 검색 값이 있을 경우, 기존 검색값 선택
+	// 검색 값이 없을 경우, 전체 선택
+	reselectSearchComboBox(m_search_name_ctl, searchNameCstr);
+	reselectSearchComboBox(m_search_grade_ctl, searchGradeCstr);
+	reselectSearchComboBox(m_search_class_ctl, searchClassNumCstr);
+	reselectSearchComboBox(m_search_number_ctl, searchStudentNumCstr);
+
+	UpdateData(FALSE);
 }
+
+// 검색 콤보 박스 로드
+void CStudentManagementDlg::loadSearchComboBox(
+	std::set<std::string>& searchNames,
+	std::set<std::string>& searchGrades,
+	std::set<std::string>& searchStudentClass,
+	std::set<std::string>& searchStudentNum
+)
+{
+	// 콤보 박스를 초기화
+	m_search_name_ctl.ResetContent();
+	m_search_grade_ctl.ResetContent();
+	m_search_class_ctl.ResetContent();
+	m_search_number_ctl.ResetContent();
+
+	// 기본값 (전체) 추가
+	CString allStr = _T("(전체)");
+	m_search_name_ctl.AddString(allStr);
+	m_search_grade_ctl.AddString(allStr);
+	m_search_class_ctl.AddString(allStr);
+	m_search_number_ctl.AddString(allStr);
+	
+	// 콤보 박스의 값을 넣는다.
+	for (const std::string& nameStr : searchNames)
+	{
+		m_search_name_ctl.AddString(Convert::StdStringToCString(nameStr));
+	}
+	for (const std::string& gradeStr : searchGrades)
+	{
+		m_search_grade_ctl.AddString(Convert::StdStringToCString(gradeStr));
+	}
+	for (const std::string& classStr : searchStudentClass)
+	{
+		m_search_class_ctl.AddString(Convert::StdStringToCString(classStr));
+	}
+	for (const std::string& numberStr : searchStudentNum)
+	{
+		m_search_number_ctl.AddString(Convert::StdStringToCString(numberStr));
+	}
+}
+
+void CStudentManagementDlg::reselectSearchComboBox(CComboBox& combo, const CString& prevValue)
+{
+	// 전체 이거나 값이 비어있으면 0 선택
+	if (prevValue.IsEmpty() || prevValue == _T("(전체)"))
+	{
+		combo.SetCurSel(0);
+		return;
+	}
+
+	int count = combo.GetCount();
+	CString text;
+
+	for (int i = 0; i < count; i++)
+	{
+		combo.GetLBText(i, text);
+		if (text == prevValue)
+		{
+			combo.SetCurSel(i);
+			return;
+		}
+	}
+
+	// 매칭 항목 없으면 전체 선택
+	combo.SetCurSel(0);
+}
+
 
 // 시험 콤보 박스 로드
 void CStudentManagementDlg::loadExamTypeComboBox()
@@ -646,4 +790,19 @@ void CStudentManagementDlg::OnClickedButtonSaveFile()
 
 	AfxMessageBox(_T("파일을 저장했습니다."));
 	
+}
+void CStudentManagementDlg::OnBnClickedButtonSearch()
+{
+	reloadStudentScoreList();
+}
+
+void CStudentManagementDlg::OnBnClickedButtonAll()
+{
+	// 검색박스 값을 전체로 수정
+	m_search_name_ctl.SetCurSel(0);
+	m_search_grade_ctl.SetCurSel(0);
+	m_search_class_ctl.SetCurSel(0);
+	m_search_number_ctl.SetCurSel(0);
+
+	reloadStudentScoreList();
 }
