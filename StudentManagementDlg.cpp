@@ -327,8 +327,6 @@ void CStudentManagementDlg::reloadStudentScoreList()
 	std::set<std::string> searchClasses;
 	std::set<std::string> searchStudentNums;
 
-	//if (studenScoreRows.empty()) return;
-
 	// 리스트 표시
 	for (int i = 0; i < studenScoreRows.size(); ++i)
 	{
@@ -748,6 +746,9 @@ void CStudentManagementDlg::OnClickedButtonLoadFile()
 
 		if (dlg.DoModal() != IDOK)
 			return;
+
+		// 학생 목록 초기화
+		studentScoreInfoController.deleteAllStudentScoreInfos();
 
 		CString filePathCstr = dlg.GetPathName();
 		std::string pathStr = Convert::CStringToStdString(filePathCstr);
