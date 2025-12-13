@@ -110,8 +110,17 @@ void StudentService::deleteStudent(StudentListKey& listKey)
 	int studentKey = searchStudentKey(listKey);
 	if (studentKey == -1)
 	{
-		throw std::runtime_error("삭제할 학생의 키를 찾을 수 없습니다.");
+		throw std::runtime_error("삭제할 학생의 키값이 제대로 생성되지 않았습니다.(-1)");
 	}
+
+	// student 조회
+	Student* student = searchStudentByKey(studentKey);
+
+	if (student == nullptr)
+	{
+		throw std::runtime_error("삭제할 학생을 찾을 수 없습니다.");
+	}
+
 	// 인덱스 listKey 삭제
 	if (studentStorage.studentIndexList.erase(listKey) == 0)
 	{
@@ -125,7 +134,36 @@ void StudentService::deleteStudent(StudentListKey& listKey)
 	}
 }
 
+void StudentService::deleteStudent(int studentKey)
+{
+	if (studentKey == -1)
+	{
+		throw std::runtime_error("삭제할 학생의 키를 찾을 수 없습니다.");
+	}
+
+	// student 조회
+	Student* student = searchStudentByKey(studentKey);
+	if (student == nullptr)
+	{
+		throw std::runtime_error("삭제할 학생을 찾을 수 없습니다.");
+	}
+
+	StudentListKey listkey = student->getListKey();
+	// 인덱스 listKey 삭제
+	if (studentStorage.studentIndexList.erase(listkey) == 0)
+	{
+		throw std::runtime_error("삭제할 학생 인덱스가 없습니다.");
+	}
+
+	// 학생 테이블 삭제
+	if (studentStorage.studentTable.erase(studentKey) == 0)
+	{
+		throw std::runtime_error("삭제할 학생이 없습니다.");
+	}
+}
+
 void StudentService::deleteAllStudents()
 {
+	studentStorage.studentIndexList.clear();
 	studentStorage.studentTable.clear();
 }

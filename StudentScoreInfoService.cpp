@@ -193,8 +193,16 @@ void StudentScoreInfoService::deleteStudentScoreInfo(StudentListKey& listKey, in
 	ExamInfo* searchedExamInfo = examInfoService.searchExamInfoById(examId);
 	if (searchedExamInfo == nullptr)
 		throw std::runtime_error("존재하지 않는 시험 정보입니다.");
+
+	int studentKey = searchedStudent->getKey();
 	// 학생 성적 삭제
-	scoreService.deleteStudentScore(searchedStudent->getKey(), examId);
+	scoreService.deleteStudentScore(studentKey, examId);
+
+	// 학생 성적이 존재하지 않는다면 학생 삭제
+	if (scoreService.searchStudentScores(studentKey) == nullptr)
+	{
+		studentService.deleteStudent(studentKey);
+	}
 }
 
 void StudentScoreInfoService::deleteAllStudentScoreInfos()
