@@ -770,7 +770,26 @@ void CStudentManagementDlg::OnClickedButtonLoadFile()
 void CStudentManagementDlg::OnClickedButtonSaveFile()
 {
 	try {
-		CFileDialog dlg(FALSE, _T("csv"), _T("학생정보.csv"),
+		if (m_studentInfoListCtl.GetItemCount() < 1)
+		{
+			throw std::runtime_error("등록된 학생 성적 정보가 하나도 없습니다.");
+		}
+
+		CString nowDateTime;
+		nowDateTime.Format(
+			_T("%04d%02d%02d"),
+			now.GetYear(),
+			now.GetMonth(),
+			now.GetDay()
+		);
+
+		CString fileName;
+		fileName.Format(
+			_T("STUDENT_SCORE_%s.csv"),
+			nowDateTime.GetString()
+		);
+
+		CFileDialog dlg(FALSE, _T("csv"), fileName,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 			_T("CSV Files (*.csv)|*.csv|All Files (*.*)|*.*||"),
 			this);
@@ -782,15 +801,14 @@ void CStudentManagementDlg::OnClickedButtonSaveFile()
 		std::string pathStr = Convert::CStringToStdString(filePathCstr);
 
 		studentScoreInfoController.saveToFile(pathStr);
+
+		AfxMessageBox(_T("파일을 저장했습니다."));
 	}
 	catch (const std::exception& e)
 	{
 		CString msg = Convert::StdStringToCString(e.what());
 		AfxMessageBox(msg);
 	}
-
-	AfxMessageBox(_T("파일을 저장했습니다."));
-	
 }
 void CStudentManagementDlg::OnBnClickedButtonSearch()
 {
