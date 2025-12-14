@@ -193,8 +193,8 @@ StudentScoreInfoRow StudentScoreInfoController::updateStudentScoreInfo(std::stri
 
 		// 기존 학생 성적 정보
 		StudentScoreInfo* originStudentScoreInfo = searchStudentScoreInfoInCache(StudentListKey::fromString(listKey), examId);
-		Student originStudent = originStudentScoreInfo->getStudent();
-		ExamInfo originExam = originStudentScoreInfo->getExam();
+		Student& originStudent = originStudentScoreInfo->getStudent();
+		ExamInfo& originExam = originStudentScoreInfo->getExam();
 
 		// 업데이트할 학생 성적 정보
 		Student updatedStudent(updateRow);

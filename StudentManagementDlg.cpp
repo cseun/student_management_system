@@ -619,7 +619,7 @@ void CStudentManagementDlg::OnBnClickedButtonSave()
 
 		// 뷰에서 업데이트할 학생, 성적 정보를 가져옴
 		StudentScoreInfoRow updateRow = getRowData();
-
+		
 		// 학생 성적 정보 생성
 		StudentScoreInfoRow newRow = studentScoreInfoController.updateStudentScoreInfo(studentListKey, examId, updateRow);
 		CString successMsg = _T("학생 성적 정보가 업데이트 되었습니다.");

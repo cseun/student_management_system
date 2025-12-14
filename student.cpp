@@ -59,5 +59,6 @@ bool Student::isSameStudentInfo(Student& compareStudent)
 {
     return (this->grade == compareStudent.grade) &&
         (this->className == compareStudent.className) &&
-		(this->studentNumber == compareStudent.studentNumber);
+        (this->studentNumber == compareStudent.studentNumber) &&
+        (this->name == compareStudent.name);
 }
