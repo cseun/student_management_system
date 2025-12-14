@@ -601,8 +601,6 @@ void CStudentManagementDlg::selectExamType(ExamType examType)
 			return;
 		}
 	}
-
-	TRACE(_T("매칭항목 없음"));
 }
 
 // 입력란 리셋
