@@ -48,24 +48,27 @@ public:
 		static std::vector<std::vector<std::string>> loadFromCSV(const std::string& filePath)
 		{
 			std::vector<std::vector<std::string>> rows;
-			std::ifstream in(filePath);
+			std::ifstream in(filePath, std::ios::binary);
 
 			if (!in.is_open())
 				return rows;
 
 			std::string line;
+			bool firstLine = true;
 
 			while (std::getline(in, line))
 			{
-				// UTF-8 BOM 제거
-				if (line.size() >= 3 &&
-					(unsigned char)line[0] == 0xEF &&
-					(unsigned char)line[1] == 0xBB &&
-					(unsigned char)line[2] == 0xBF)
-				{
-					line.erase(0, 3);
-				}
+				// CR 제거 (CRLF 대응)
+				if (!line.empty() && line.back() == '\r')
+					line.pop_back();
 
+				// UTF-8 BOM 제거 (첫 줄만)
+				if (firstLine)
+				{
+					firstLine = false;
+					if (line.rfind("\xEF\xBB\xBF", 0) == 0)
+						line.erase(0, 3);
+				}
 
 				rows.push_back(parseLine(line));
 			}
