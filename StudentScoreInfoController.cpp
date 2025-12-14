@@ -15,9 +15,15 @@ void StudentScoreInfoController::validateStudentInfo(Student& student)
 	if (student.getName().empty()) {
 		throw std::runtime_error("이름은 비어있을 수 없습니다.");
 	}
-	// 반, 번호, 학년은 1 이상이어야 한다.
-	if (student.getGrade() < 1 || student.getClassNumber() < 1 || student.getStudentNumber() < 1) {
-		throw std::runtime_error("학년, 반, 번호는 1 이상이어야 합니다.");
+	// 학년, 번호는 1 이상이어야 한다.
+	if (student.getGrade() < 1 || student.getStudentNumber() < 1) {
+		throw std::runtime_error("학년, 번호는 1 이상이어야 합니다.");
+	}
+
+	// 반은 필수 입력 값이다.
+	if (student.getClassName().empty())
+	{
+		throw std::runtime_error("반 입력은 필수입니다.");
 	}
 }
 void StudentScoreInfoController::validateExamInfo(ExamInfo& exam)
@@ -112,7 +118,7 @@ StudentScoreInfoRow StudentScoreInfoController::studentScoreInfoToRow(StudentSco
 
 		StudentScoreInfoRow row;
 		row.grade = std::to_string(student.getGrade());
-		row.classNumber = std::to_string(student.getClassNumber());
+		row.className = student.getClassName();
 		row.studentNumber = std::to_string(student.getStudentNumber());
 		row.name = student.getName();
 		row.examId = std::to_string(exam.getId());
@@ -287,7 +293,7 @@ void StudentScoreInfoController::loadFromFile(std::string& path)
 			StudentScoreInfoRow infoRow;
 			int i = 0;
 			infoRow.grade = row[i++];
-			infoRow.classNumber = row[i++];
+			infoRow.className = row[i++];
 			infoRow.studentNumber = row[i++];
 			infoRow.name = row[i++];
 			infoRow.year = row[i++];

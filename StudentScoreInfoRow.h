@@ -7,7 +7,7 @@
 struct StudentScoreInfoRow
 {
 	std::string grade;
-	std::string classNumber;
+	std::string className;
 	std::string studentNumber;
 	std::string name;
 
@@ -32,12 +32,12 @@ struct StudentScoreInfoRow
 	}
 	static std::vector<int> getAttributeSizes()
 	{
-		return { 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1 };
+		return { 1, 2, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1 };
 	}
 	std::vector<std::string> toVector() {
 		return {
 			grade, 
-			classNumber, 
+			className,
 			studentNumber, 
 			name,
 			year,
@@ -56,7 +56,7 @@ struct StudentScoreInfoRow
 	{
 		return StudentListKey{
 			std::stoi(grade),
-			std::stoi(classNumber),
+			className,
 			std::stoi(studentNumber)
 		};
 	}

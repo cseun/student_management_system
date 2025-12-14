@@ -10,7 +10,7 @@ private:
 
     std::string name = "";
     int grade = 0;
-    int classNumber = 0;
+    std::string className = "0";
     int studentNumber = 0;
 
 public:
@@ -20,7 +20,7 @@ public:
     Student(
         std::string name,
         int grade,
-        int classNumber,
+        std::string className,
         int studentNumber
 	);
 
@@ -31,14 +31,14 @@ public:
     // Getter
     std::string& getName();
     int getGrade();
-    int getClassNumber();
+    std::string& getClassName();
     int getStudentNumber();
 	
     // Setter
 	void setKey();
     void setName(std::string& name);
     void setGrade(int grade);
-    void setClassNumber(int classNumber);
+    void setClassName(std::string& className);
     void setStudentNumber(int studentNumber);
 
     void setStudent(Student& updateStudent);

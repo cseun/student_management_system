@@ -335,13 +335,13 @@ void CStudentManagementDlg::reloadStudentScoreList()
 		// 검색박스에 표시할 유니크 값 수집
 		searchNames.insert(studentScoreRow.name);
 		searchGrades.insert(studentScoreRow.grade);
-		searchClasses.insert(studentScoreRow.classNumber);
+		searchClasses.insert(studentScoreRow.className);
 		searchStudentNums.insert(studentScoreRow.studentNumber);
 
 		// 필터링 적용
 		if (!searchName.empty() && studentScoreRow.name != searchName) continue;
 		if (!searchGrade.empty() && studentScoreRow.grade != searchGrade) continue;
-		if (!searchClassNum.empty() && studentScoreRow.classNumber != searchClassNum) continue;
+		if (!searchClassNum.empty() && studentScoreRow.className != searchClassNum) continue;
 		if (!searchStudentNum.empty() && studentScoreRow.studentNumber != searchStudentNum) continue;
 		
 		// row 생성
@@ -488,7 +488,7 @@ StudentScoreInfoRow CStudentManagementDlg::getRowData()
 	StudentScoreInfoRow row;
 	row.name = Convert::CStringToStdString(m_name);
 	row.grade = Convert::CStringToStdString(m_grade);
-	row.classNumber = Convert::CStringToStdString(m_class);
+	row.className = Convert::CStringToStdString(m_class);
 	row.studentNumber = Convert::CStringToStdString(m_studentNumber);
 
 	row.year = std::to_string(m_year);
@@ -518,7 +518,7 @@ void CStudentManagementDlg::setStudentData(StudentScoreInfoRow& row)
 {
 	try {
 		m_name = Convert::StdStringToCString(row.name);
-		m_class = Convert::StdStringToCString(row.classNumber);
+		m_class = Convert::StdStringToCString(row.className);
 		m_grade = Convert::StdStringToCString(row.grade);
 		m_studentNumber = Convert::StdStringToCString(row.studentNumber);
 		m_year = stoi(row.year);

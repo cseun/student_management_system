@@ -1,23 +1,25 @@
 ﻿#pragma once
 #include <string>
+#include <sstream>
+
 struct StudentListKey
 {
 	int grade = 0;
-	int classNumber = 0;
+	std::string className = "0";
 	int studentNumber = 0;
 
 	bool operator<(const StudentListKey& other) const
 	{
 		if (grade != other.grade)
 			return grade < other.grade;
-		if (classNumber != other.classNumber)
-			return classNumber < other.classNumber;
+		if (className != other.className)
+			return className < other.className;
 		return studentNumber < other.studentNumber;
 	}
 
 	bool operator==(const StudentListKey& other) const {
 		return grade == other.grade &&
-			classNumber == other.classNumber &&
+			className == other.className &&
 			studentNumber == other.studentNumber;
 	}
 
@@ -28,14 +30,24 @@ struct StudentListKey
 	std::string toString() const
 	{
 		return std::to_string(grade) + "-" +
-			std::to_string(classNumber) + "-" +
+			className + "-" +
 			std::to_string(studentNumber);
 	}
 
-	static StudentListKey fromString(std::string listKeyStr)
+	static StudentListKey fromString(std::string& listKeyStr)
 	{
 		StudentListKey key;
-		sscanf_s(listKeyStr.c_str(), "%d-%d-%d", &key.grade, &key.classNumber, &key.studentNumber);
+		std::stringstream ss(listKeyStr);
+		std::string token;
+
+		std::getline(ss, token, '-');
+		key.grade = std::stoi(token);
+
+		std::getline(ss, key.className, '-');
+
+		std::getline(ss, token, '-');
+		key.studentNumber = std::stoi(token);
+
 		return key;
 	}
 };
