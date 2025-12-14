@@ -67,10 +67,10 @@ public:
 	void createStudentScoreList(); // 학생 성적 리스트 생성
 	void reloadStudentScoreList(); // 학생 성적 리스트 새로고침
 	void loadSearchComboBox(
-		std::set<std::string>& name, 
-		std::set<std::string>& grade, 
-		std::set<std::string>& studentClass, 
-		std::set<std::string>& studentNum
+		const std::set<std::string>& name, 
+		const std::set<int> grade,
+		const std::set<std::string>& studentClass,
+		const std::set<int> studentNum
 	);
 	void loadExamTypeComboBox(); // 시험 선택 박스 로드
 	void reselectSearchComboBox(CComboBox& combo, const CString& prevValue); // 선택 박스 기존값 선택
@@ -79,21 +79,15 @@ public:
 
 	afx_msg void OnBnClickedButtonAdd();
 	afx_msg void OnBnClickedButtonSave();
-	
-
 	afx_msg void OnBnClickedButtonDelete();
-
 
 	afx_msg void OnClickedButtonLoadFile();
 	afx_msg void OnClickedButtonSaveFile();
 	
 	afx_msg void OnClickListStudent(NMHDR* pNMHDR, LRESULT* pResult);
-
-
 	
 	CButton m_button_save;
 	CButton m_button_delete;
-
 	CComboBox m_search_name_ctl;
 	CComboBox m_search_grade_ctl;
 	CComboBox m_search_class_ctl;

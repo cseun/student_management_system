@@ -271,6 +271,9 @@ void CStudentManagementDlg::createStudentScoreList()
 // 학생 성적 리스트 뷰 새로고침 (내용)
 void CStudentManagementDlg::reloadStudentScoreList()
 {
+	m_button_save.EnableWindow(FALSE); // 수정 버튼 비활성화
+	m_button_delete.EnableWindow(FALSE); // 삭제 버튼 비활성화
+
 	UpdateData(TRUE);
 
 	// 검색박스에서 선택된 값을 가져와 필터링
@@ -323,9 +326,9 @@ void CStudentManagementDlg::reloadStudentScoreList()
 	
 	// 유니크 검색 값 수집용 set (중복제거, 자동정렬)
 	std::set<std::string> searchNames;
-	std::set<std::string> searchGrades;
+	std::set<int> searchGrades;
 	std::set<std::string> searchClasses;
-	std::set<std::string> searchStudentNums;
+	std::set<int> searchStudentNums;
 
 	// 리스트 표시
 	for (int i = 0; i < studenScoreRows.size(); ++i)
@@ -334,9 +337,9 @@ void CStudentManagementDlg::reloadStudentScoreList()
 
 		// 검색박스에 표시할 유니크 값 수집
 		searchNames.insert(studentScoreRow.name);
-		searchGrades.insert(studentScoreRow.grade);
+		searchGrades.insert(std::stoi(studentScoreRow.grade));
 		searchClasses.insert(studentScoreRow.className);
-		searchStudentNums.insert(studentScoreRow.studentNumber);
+		searchStudentNums.insert(std::stoi(studentScoreRow.studentNumber));
 
 		// 필터링 적용
 		if (!searchName.empty() && studentScoreRow.name != searchName) continue;
@@ -366,6 +369,7 @@ void CStudentManagementDlg::reloadStudentScoreList()
 
 	// 검색 콤보 박스 업데이트
 	loadSearchComboBox(searchNames, searchGrades, searchClasses, searchStudentNums);
+	
 	// 검색 값이 있을 경우, 기존 검색값 선택
 	// 검색 값이 없을 경우, 전체 선택
 	reselectSearchComboBox(m_search_name_ctl, searchNameCstr);
@@ -376,12 +380,23 @@ void CStudentManagementDlg::reloadStudentScoreList()
 	UpdateData(FALSE);
 }
 
+bool IsNumberString(const std::string& str)
+{
+	if (str.empty()) return false;
+
+	return std::all_of(str.begin(), str.end(), // STL 스타일: 의도를 코드로 표현
+		[](unsigned char ch)
+		{
+			return std::isdigit(ch);
+		});
+}
+
 // 검색 콤보 박스 로드
 void CStudentManagementDlg::loadSearchComboBox(
-	std::set<std::string>& searchNames,
-	std::set<std::string>& searchGrades,
-	std::set<std::string>& searchStudentClass,
-	std::set<std::string>& searchStudentNum
+	const std::set<std::string>& searchNames,
+	const std::set<int> searchGrades,
+	const std::set<std::string>& searchStudentClass,
+	const std::set<int> searchStudentNum
 )
 {
 	// 콤보 박스를 초기화
@@ -398,21 +413,52 @@ void CStudentManagementDlg::loadSearchComboBox(
 	m_search_number_ctl.AddString(allStr);
 	
 	// 콤보 박스의 값을 넣는다.
+
+	// 이름
 	for (const std::string& nameStr : searchNames)
 	{
 		m_search_name_ctl.AddString(Convert::StdStringToCString(nameStr));
 	}
-	for (const std::string& gradeStr : searchGrades)
-	{
-		m_search_grade_ctl.AddString(Convert::StdStringToCString(gradeStr));
+
+	// 학년
+	for (const int grade : searchGrades)
+	{		
+		m_search_grade_ctl.AddString(Convert::StdStringToCString(std::to_string(grade)));
 	}
+
+	// 반 (기본 정렬형태 제외)
+	std::vector<int> numberList;
+	std::vector<std::string> stringList;
 	for (const std::string& classStr : searchStudentClass)
 	{
-		m_search_class_ctl.AddString(Convert::StdStringToCString(classStr));
+		if (IsNumberString(classStr))
+		{
+			numberList.push_back(std::stoi(classStr));
+		}
+		else
+		{
+			stringList.push_back(classStr);
+		}
 	}
-	for (const std::string& numberStr : searchStudentNum)
+	std::sort(numberList.begin(), numberList.end());
+	for (int num : numberList)
 	{
-		m_search_number_ctl.AddString(Convert::StdStringToCString(numberStr));
+		std::string numStr = std::to_string(num);
+		m_search_class_ctl.AddString(
+			Convert::StdStringToCString(numStr)
+		);
+	}
+	for (const std::string& str : stringList)
+	{
+		m_search_class_ctl.AddString(
+			Convert::StdStringToCString(str)
+		);
+	}
+
+	// 번호
+	for (const int studentNumber : searchStudentNum)
+	{
+		m_search_number_ctl.AddString(Convert::StdStringToCString(std::to_string(studentNumber)));
 	}
 }
 
@@ -494,14 +540,12 @@ StudentScoreInfoRow CStudentManagementDlg::getRowData()
 	row.year = std::to_string(m_year);
 	row.semester = std::to_string(m_semester);
 
-	//CString examTypeText;
 	int examIndex = m_exam_type_ctl.GetCurSel();
 	if (examIndex == CB_ERR)
 	{
 		throw std::runtime_error("시험 종류를 선택은 필수입니다.");
 	}
-	//m_exam_type_ctl.GetLBText(examIndex, examTypeText);
-	//row.examType = Convert::CStringToStdString(examTypeText);
+	
 	row.examType = std::to_string((int)m_exam_type_ctl.GetItemData(examIndex));
 
 	row.kukScore = std::to_string(m_kukScore);
@@ -523,10 +567,6 @@ void CStudentManagementDlg::setStudentData(StudentScoreInfoRow& row)
 		m_studentNumber = Convert::StdStringToCString(row.studentNumber);
 		m_year = stoi(row.year);
 		m_semester = stoi(row.semester);
-
-		ExamType examType = (ExamType)(std::stoi(row.examType));
-		selectExamType(examType);
-
 		m_kukScore = stoi(row.kukScore);
 		m_engScore = stoi(row.engScore);
 		m_mathScore = stoi(row.mathScore);
@@ -536,6 +576,9 @@ void CStudentManagementDlg::setStudentData(StudentScoreInfoRow& row)
 		m_rank = stoi(row.rank);
 
 		UpdateData(FALSE);
+
+		ExamType examType = (ExamType)(std::stoi(row.examType));
+		selectExamType(examType);
 	} 
 	catch (const std::exception e)
 	{
@@ -558,6 +601,8 @@ void CStudentManagementDlg::selectExamType(ExamType examType)
 			return;
 		}
 	}
+
+	TRACE(_T("매칭항목 없음"));
 }
 
 // 입력란 리셋
@@ -710,7 +755,7 @@ void CStudentManagementDlg::OnClickListStudent(NMHDR* pNMHDR, LRESULT* pResult)
 			// 뷰 입력란에 표시
 			if (info != nullptr) {
 				StudentScoreInfoRow row = studentScoreInfoController.studentScoreInfoToRow(*info);
-				setStudentData(row);
+				setStudentData(row); //UpdateData(FALSE) 멤버변수 -> 컨트롤
 			} else {
 				AfxMessageBox(_T("학생 성적 정보를 찾을 수 없습니다."));
 				m_button_save.EnableWindow(FALSE); // 수정 버튼 비활성화 
